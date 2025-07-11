@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "@/generated/prisma"
+  previewFeatures = ["views"]
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  ID               Int     @id @map("ID")
+  CodCli           Int?     @map("CodCli")
+  EMail            String?  @map("EMail") @db.VarChar(50)
+  Password         String?  @map("Password") @db.VarChar(20)
+  Perfil           Int?     @map("Perfil")
+  Nacimiento       DateTime?@map("Nacimiento")
+  FechaAlta        DateTime @map("FechaAlta")
+  Nombre           String?  @map("Nombre") @db.VarChar(30)
+  Nombre2          String?  @map("Nombre2") @db.VarChar(20)
+  Apellido         String?  @map("Apellido") @db.VarChar(20)
+  Calle            String?  @map("Calle") @db.VarChar(60)
+  Altura           String?  @map("Altura") @db.VarChar(10)
+  Otros            String?  @map("Otros") @db.VarChar(50)
+  Localidad        String?  @map("Localidad") @db.VarChar(50)
+  IDLocalidad      Int?     @map("IDLocalidad")
+  CodigoPostal     String?  @map("CodigoPostal") @db.VarChar(50)
+  Partido          String?  @map("Partido") @db.VarChar(50)
+  IDPartido        Int?     @map("IDPartido")
+  Provincia        Int?     @map("Provincia")
+  Pais             Int?     @map("Pais")
+  Entre            String?  @map("Entre") @db.VarChar(60)
+  Entre2           String?  @map("Entre2") @db.VarChar(60)
+  Telefonos        String?  @map("Telefonos") @db.VarChar(100)
+  Fax              String?  @map("Fax") @db.VarChar(50)
+  Horario          String?  @map("Horario") @db.VarChar(70)
+  Comentarios      String?  @map("Comentarios") @db.Text
+  Sms              String?  @map("Sms") @db.VarChar(50)
+  UltimoIngreso    DateTime?@map("UltimoIngreso")
+  SessionOrigen    String?  @map("SessionOrigen") @db.VarChar(50)
+  EstadoRegistracion Int?   @map("EstadoRegistracion")
+  Documento        String?  @map("Documento") @db.VarChar(50)
+  Web              String?  @map("Web") @db.VarChar(60)
+  EMailAnterior    String?  @map("EMailAnterior") @db.VarChar(50)
+  Latitud          Float?   @map("Latitud")
+  Longitud         Float?   @map("Longitud")
+
+  @@map("WP_UsuariosRegistrados")
+}
+
+
+
+model Imagen {
+  Tipo   Int    @map("Tipo")
+  ID     Int    @id @map("ID") @default(autoincrement())
+  Imagen Bytes? @map("Imagen")
+  Orden  Int?   @map("Orden")
+  AutoID Int    @map("AutoID") 
+
+  @@map("CC_Imagenes")
+}
+
+
+model Marca {
+  codigo      Int     @id @map("Codigo")
+  descripcion String  @map("Descripcion")
+
+  @@map("CC_Marcas")
+}
+
+
