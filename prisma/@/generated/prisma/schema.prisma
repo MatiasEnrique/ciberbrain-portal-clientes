@@ -11,7 +11,7 @@ datasource db {
 
 model User {
   ID                 Int       @id @map("ID")
-  CodCli             Int?      @map("CodCli")
+  CodCli             Int?      @unique @map("CodCli")
   EMail              String?   @map("EMail") @db.VarChar(50)
   Password           String?   @map("Password") @db.VarChar(20)
   Perfil             Int?      @map("Perfil")
@@ -65,3 +65,30 @@ model Marca {
 
   @@map("CC_Marcas")
 }
+
+// Editable text content system - using existing legacy table
+model EditableText {
+  ID           Int      @id @default(autoincrement()) @map("ID")
+  PageName     String   @map("PageName") @db.VarChar(100)
+  ElementId    String   @map("ElementId") @db.VarChar(100)
+  Content      String?  @map("Content") @db.Text
+  Perfil       Int?     @default(0) @map("Perfil")
+  Entorno      String?  @default("default") @map("Entorno") @db.VarChar(50)
+  LastModified DateTime @default(now()) @map("LastModified")
+  ModifiedBy   Int?     @map("ModifiedBy")
+
+  @@unique([PageName, ElementId, Perfil, Entorno])
+  @@map("WP_Texto_Pagina")
+}
+
+// Note: Work order related tables are accessed via stored procedures
+// The following models are commented out as they don't exist as tables
+// but are accessed through stored procedures:
+// - WP_TraerTrabajo (SP)
+// - WP_SucesosTrabajo (SP)
+// - WP_CUSTOM_Encuesta_Datos_a_Validar (SP)
+// - WP_Get_Consumer_Functions (SP)
+// - CS_ObtenerFormatosImpresion (SP)
+// - WP_Sucesos_Generables_Usuario (Function)
+// - CS_GeneraSucesoTrabajo (SP)
+// - WP_Grabar_Encuesta (SP)

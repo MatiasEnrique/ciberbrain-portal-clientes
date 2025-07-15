@@ -22,8 +22,7 @@ import {
   PaisSchemaType,
   PartidoSchemaType,
   ProvinciaSchemaType,
-  registerSchema,
-} from "../schemas";
+} from "@/lib/schemas";
 import {
   Select,
   SelectContent,
@@ -33,7 +32,25 @@ import {
 } from "@/components/ui/select";
 import z from "zod";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { registerSchema } from "../schemas";
+
+const fetchProvincias = async (
+  paisId: string
+): Promise<ProvinciaSchemaType[]> => {
+  const response = await fetch(`/api/provincias?paisId=${paisId}`);
+  if (!response.ok) throw new Error("Failed to fetch provincias");
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+};
+
+const fetchPartidos = async (
+  provinciaId: string
+): Promise<PartidoSchemaType[]> => {
+  const response = await fetch(`/api/partidos?provinciaId=${provinciaId}`);
+  if (!response.ok) throw new Error("Failed to fetch partidos");
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+};
 
 export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -66,8 +83,6 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
 
   const [isPending, startTransition] = useTransition();
 
-  const router = useRouter();
-
   const { data: provincias, isLoading } = useQuery<
     ProvinciaSchemaType[],
     Error,
@@ -77,10 +92,11 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
     queryKey: ["provincias", form.watch("country")],
     queryFn: async () => {
       const request = await fetch(
-        `/auth/registrarse/api/provincias?pais=${form.getValues("country")}`
+        `/api/provincias?paisId=${form.getValues("country")}`
       );
       return await request.json();
     },
+    enabled: !!form.watch("country"),
   });
 
   const { data: partidos, isLoading: isLoadingPartidos } = useQuery<
@@ -92,10 +108,11 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
     queryKey: ["partidos", form.watch("province")],
     queryFn: async () => {
       const request = await fetch(
-        `/auth/registrarse/api/partidos?provincia=${form.getValues("province")}`
+        `/api/partidos?provincia=${form.getValues("province")}`
       );
       return await request.json();
     },
+    enabled: !!form.watch("province"),
   });
 
   function onSubmit(values: z.infer<typeof registerSchema>) {
@@ -232,7 +249,11 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
                         form.setValue("province", 0);
                         form.setValue("partido", 0);
                       }}
-                      value={field.value.toString()}
+                      value={
+                        field.value !== undefined && field.value !== null
+                          ? field.value.toString()
+                          : ""
+                      }
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -241,11 +262,8 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
                       </FormControl>
                       <SelectContent>
                         {paises.map((pais) => (
-                          <SelectItem
-                            key={pais.pais}
-                            value={pais.id.toString()}
-                          >
-                            {pais.pais}
+                          <SelectItem key={pais.ID} value={pais.ID.toString()}>
+                            {pais.Pais}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -266,7 +284,11 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
                         field.onChange(parseInt(value, 10));
                         form.setValue("partido", 0);
                       }}
-                      value={field.value.toString()}
+                      value={
+                        field.value !== undefined && field.value !== null
+                          ? field.value.toString()
+                          : ""
+                      }
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -276,10 +298,10 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
                       <SelectContent>
                         {provincias?.map((provincia: ProvinciaSchemaType) => (
                           <SelectItem
-                            key={provincia.id}
-                            value={provincia.id.toString()}
+                            key={provincia.ID}
+                            value={provincia.ID.toString()}
                           >
-                            {provincia.provincia}
+                            {provincia.Provincia}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -298,7 +320,11 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
                       onValueChange={(value) =>
                         field.onChange(parseInt(value, 10))
                       }
-                      value={field.value.toString()}
+                      value={
+                        field.value !== undefined && field.value !== null
+                          ? field.value.toString()
+                          : ""
+                      }
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -308,10 +334,10 @@ export default function RegisterForm({ paises }: { paises: PaisSchemaType[] }) {
                       <SelectContent>
                         {partidos?.map((partido: PartidoSchemaType) => (
                           <SelectItem
-                            key={partido.id}
-                            value={partido.id.toString()}
+                            key={partido.ID}
+                            value={partido.ID.toString()}
                           >
-                            {partido.partido}
+                            {partido.Partido}
                           </SelectItem>
                         ))}
                       </SelectContent>

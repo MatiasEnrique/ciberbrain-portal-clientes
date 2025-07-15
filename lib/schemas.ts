@@ -64,19 +64,87 @@ export const profileSchema = registerSchema._def.schema.omit({
 export type ProfileSchemaType = z.infer<typeof profileSchema>;
 
 export const PaisSchema = z.object({
-  id: z.number(),
-  pais: z.string(),
+  ID: z.number(),
+  Pais: z.string(),
 });
 export type PaisSchemaType = z.infer<typeof PaisSchema>;
 
 export const ProvinciaSchema = z.object({
-  id: z.number(),
-  provincia: z.string(),
+  ID: z.number(),
+  Provincia: z.string(),
 });
 export type ProvinciaSchemaType = z.infer<typeof ProvinciaSchema>;
 
 export const PartidoSchema = z.object({
-  id: z.number(),
-  partido: z.string(),
+  ID: z.number(),
+  Partido: z.string(),
 });
 export type PartidoSchemaType = z.infer<typeof PartidoSchema>;
+
+export const LocalidadSchema = z.object({
+  ID: z.number(),
+  Localidad: z.string(),
+});
+export type LocalidadSchemaType = z.infer<typeof LocalidadSchema>;
+
+// Product validation schemas
+export const validateModeloSchema = z.object({
+  Codigo: z.string(),
+  DescripcionReducida: z.string(),
+  Marca: z.number(),
+});
+export type ValidarModelo = z.infer<typeof validateModeloSchema>;
+
+export const validateSerieSchema = z.object({
+  Modelo: z.string(),
+  NroSerie: z.string(),
+  Resultado: z.number(),
+});
+export type ValidarSerie = z.infer<typeof validateSerieSchema>;
+
+export const comercioSchema = z.object({
+  ID: z.number(),
+  Comercio: z.string(),
+  CodCli: z.string(),
+  Sucursal: z.string(),
+});
+export type Comercio = z.infer<typeof comercioSchema>;
+
+export const hasComerciosSchema = z.object({
+  SoloLista: z.boolean(),
+  Cantidad: z.number(),
+});
+export type HasComercios = z.infer<typeof hasComerciosSchema>;
+
+// Product policy and reparation schemas
+export const politicaSchema = z.object({
+  IDPolitica: z.number(),
+  Politica: z.string(),
+  Inicio: z.date(),
+  MesesProducto: z.number(),
+  MesesPremios: z.number(),
+  MesesTotales: z.number(),
+  Fin: z.date(),
+  Garantia: z.number(),
+  TrabajoPendiente: z.null(),
+  PoliticaAsistencia: z.number(),
+});
+export type Politica = z.infer<typeof politicaSchema>;
+
+export const opcionesAsistenciaSchema = z.object({
+  id: z.number(),
+  Opcion: z.string(),
+  Fecha: z.coerce.boolean(),
+  IDSuceso: z.number().nullable(),
+});
+export type OpcionesAsistencia = z.infer<typeof opcionesAsistenciaSchema>;
+
+export const reparationSchema = z.object({
+  IDTrabajo: z.number(),
+  FechaAlta: z.date(),
+  Estado: z.string(),
+  Responsable: z.string(),
+  IDPolitica: z.number(),
+  EstadoGeneral: z.number(),
+});
+export type Reparation = z.infer<typeof reparationSchema>;

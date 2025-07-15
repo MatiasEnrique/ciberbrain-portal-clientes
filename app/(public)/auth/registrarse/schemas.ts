@@ -42,24 +42,3 @@ export const registerSchema = z
   });
 
 export type RegisterSchemaType = z.infer<typeof registerSchema>;
-
-export const paisSchema = z.object({
-  pais: z.string(),
-  id: z.number(),
-});
-
-export type PaisSchemaType = z.infer<typeof paisSchema>;
-
-export const provinciaSchema = z.object({
-  id: z.number(),
-  provincia: z.string(),
-});
-
-export type ProvinciaSchemaType = z.infer<typeof provinciaSchema>;
-
-export const partidoSchema = z.object({
-  id: z.number(),
-  partido: z.string(),
-});
-
-export type PartidoSchemaType = z.infer<typeof partidoSchema>;

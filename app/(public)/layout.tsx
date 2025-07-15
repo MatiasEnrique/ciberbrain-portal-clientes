@@ -4,6 +4,10 @@ import "@/app/globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import QueryProvider from "@/providers/query-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+import { SessionProvider } from "next-auth/react";
+import Navbar from "@/components/navbar";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -17,13 +21,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <QueryProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={inter.className}>
-          {children}
-          <Toaster />
-        </body>
-      </html>
-    </QueryProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <QueryProvider>
+          <SessionProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div className="min-h-screen bg-background">
+                <Navbar />
+                <main className="px-6 pt-4">
+                  <div className="mx-auto max-w-6xl">{children}</div>
+                </main>
+              </div>
+              <Toaster position="top-center" />
+            </ThemeProvider>
+          </SessionProvider>
+        </QueryProvider>
+      </body>
+    </html>
   );
 }

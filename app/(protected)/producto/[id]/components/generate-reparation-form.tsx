@@ -28,10 +28,10 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import * as React from "react";
 import {
-  generateReparationSchema,
   opcionesAsistenciaSchema,
   politicaSchema,
-} from "../schemas";
+} from "@/lib/schemas";
+import { generateReparationSchema } from "../schemas";
 import z from "zod";
 import { productSchema } from "@/lib/schemas";
 import { useMutation } from "@tanstack/react-query";

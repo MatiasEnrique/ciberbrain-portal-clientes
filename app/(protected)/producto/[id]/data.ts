@@ -4,7 +4,7 @@ import {
   opcionesAsistenciaSchema,
   politicaSchema,
   reparationSchema,
-} from "./schemas";
+} from "@/lib/schemas";
 import { executeWithUserValidation, prisma } from "@/lib/prisma";
 import { Product, productSchema } from "@/lib/schemas";
 import { getProductImage } from "../../productos/data";
@@ -12,9 +12,9 @@ import { Prisma } from "@/prisma/@/generated/prisma";
 
 export async function getProducto(id: string, id_usuario: string) {
   try {
-    const query: Product[] = await prisma.$queryRaw`
-  exec WP_Datos_Producto @IDUsuario = ${id_usuario}, @IDProducto = ${id}
-  `;
+    const query: Product[] = await executeWithUserValidation(
+      Prisma.sql`exec WP_Datos_Producto @IDUsuario = ${id_usuario}, @IDProducto = ${id}`
+    );
 
     if (query.length === 0) {
       return null;

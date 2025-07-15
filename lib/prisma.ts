@@ -1,10 +1,12 @@
-import { auth } from "@/auth";
 import { PrismaClient } from "@/prisma/@/generated/prisma";
 import { Sql } from "@/prisma/@/generated/prisma/runtime/library";
+import { auth } from "@/auth";
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 

@@ -10,8 +10,8 @@ import {
   ValidarSerie,
   Comercio,
   comercioSchema,
-  RegisterProductPayload,
-} from "./schemas";
+} from "@/lib/schemas";
+import { RegisterProductPayload } from "./schemas";
 import { revalidatePath } from "next/cache";
 import path from "path";
 import fs from "fs/promises";
@@ -28,9 +28,9 @@ export async function validateModelo(
   }
 
   try {
-    const result: unknown = await prisma.$queryRaw`
-          dbo.WP_ValidarModelo @Modelo = ${modelo}, @Marca = ${marca}
-      `;
+    const result: unknown = await executeWithUserValidation(
+      Prisma.sql`dbo.WP_ValidarModelo @Modelo = ${modelo}, @Marca = ${marca}`
+    );
 
     if (!result || (Array.isArray(result) && result.length === 0)) {
       return {
@@ -63,9 +63,9 @@ export async function validateSerie(
   }
 
   try {
-    const result: unknown = await prisma.$queryRaw`
-          dbo.WP_ValidarNroSerie @Modelo = ${modelo}, @NroSerie = ${nroSerie}
-      `;
+    const result: unknown = await executeWithUserValidation(
+      Prisma.sql`dbo.WP_ValidarNroSerie @Modelo = ${modelo}, @NroSerie = ${nroSerie}`
+    );
 
     if (!result || (Array.isArray(result) && result.length === 0)) {
       return {
@@ -98,11 +98,9 @@ export const validateComercio = async (
   }
 
   try {
-    const result: unknown = await prisma.$queryRaw`
-      SELECT ID, Comercio 
-      FROM CS_Comercios 
-      WHERE Comercio = ${comercio}
-    `;
+    const result: unknown = await executeWithUserValidation(
+      Prisma.sql`SELECT ID, Comercio FROM CS_Comercios WHERE Comercio = ${comercio}`
+    );
 
     if (!result || (Array.isArray(result) && result.length === 0)) {
       return {

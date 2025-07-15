@@ -172,6 +172,17 @@ exports.Prisma.MarcaScalarFieldEnum = {
   descripcion: 'descripcion'
 };
 
+exports.Prisma.EditableTextScalarFieldEnum = {
+  ID: 'ID',
+  PageName: 'PageName',
+  ElementId: 'ElementId',
+  Content: 'Content',
+  Perfil: 'Perfil',
+  Entorno: 'Entorno',
+  LastModified: 'LastModified',
+  ModifiedBy: 'ModifiedBy'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -186,7 +197,8 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   User: 'User',
   Imagen: 'Imagen',
-  Marca: 'Marca'
+  Marca: 'Marca',
+  EditableText: 'EditableText'
 };
 
 /**

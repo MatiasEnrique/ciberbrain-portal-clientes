@@ -3,6 +3,7 @@ import { getProductReparations } from "../data";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 export default async function ReparationHistoryCard({
   id,
@@ -34,9 +35,10 @@ export default async function ReparationHistoryCard({
                   href={`/trabajo/${reparacion.IDTrabajo}`}
                   className={`${buttonVariants({
                     variant: "link",
-                  })} w-fit text-left pl-0`}
+                  })} w-fit text-left pl-0 flex items-center gap-1 group underline underline-offset-4 hover:text-primary transition-colors`}
                 >
-                  Orden de Servicio N°: {reparacion.IDTrabajo}
+                  <span>Orden de Servicio N°: {reparacion.IDTrabajo}</span>
+                  <ExternalLink className="h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity" />
                 </Link>
                 <p className="text-sm text-muted-foreground">
                   Fecha: {new Date(reparacion.FechaAlta).toLocaleDateString()}

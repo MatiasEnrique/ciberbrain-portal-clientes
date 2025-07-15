@@ -81,7 +81,7 @@ export default function PerfilForm({
     queryFn: async () => {
       if (!form.getValues("country")) return [];
       const request = await fetch(
-        `/auth/registrarse/api/provincias?pais=${form.getValues("country")}`
+        `/api/provincias?pais=${form.getValues("country")}`
       );
       return await request.json();
     },
@@ -93,7 +93,7 @@ export default function PerfilForm({
     queryFn: async () => {
       if (!form.getValues("province")) return [];
       const request = await fetch(
-        `/auth/registrarse/api/partidos?provincia=${form.getValues("province")}`
+        `/api/partidos?provincia=${form.getValues("province")}`
       );
       return await request.json();
     },
@@ -210,11 +210,8 @@ export default function PerfilForm({
                       </FormControl>
                       <SelectContent>
                         {paises.map((pais) => (
-                          <SelectItem
-                            key={pais.pais}
-                            value={pais.id.toString()}
-                          >
-                            {pais.pais}
+                          <SelectItem key={pais.ID} value={pais.ID.toString()}>
+                            {pais.Pais}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -245,10 +242,10 @@ export default function PerfilForm({
                       <SelectContent>
                         {provincias?.map((provincia: ProvinciaSchemaType) => (
                           <SelectItem
-                            key={provincia.id}
-                            value={provincia.id.toString()}
+                            key={provincia.ID}
+                            value={provincia.ID.toString()}
                           >
-                            {provincia.provincia}
+                            {provincia.Provincia}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -277,10 +274,10 @@ export default function PerfilForm({
                       <SelectContent>
                         {partidos?.map((partido: PartidoSchemaType) => (
                           <SelectItem
-                            key={partido.id}
-                            value={partido.id.toString()}
+                            key={partido.ID}
+                            value={partido.ID.toString()}
                           >
-                            {partido.partido}
+                            {partido.Partido}
                           </SelectItem>
                         ))}
                       </SelectContent>

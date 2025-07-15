@@ -1,16 +1,17 @@
-import { prisma } from "@/lib/prisma";
+import { prisma, executeWithUserValidation } from "@/lib/prisma";
+import { Prisma } from "@/prisma/@/generated/prisma";
 import {
   documentSchema,
   marcaSchema,
   modeloSchema,
   productSchema,
 } from "@/lib/schemas";
-import { HasComercios, hasComerciosSchema } from "./schemas";
+import { HasComercios, hasComerciosSchema } from "@/lib/schemas";
 
 export async function getUserProducts(userId: string) {
-  const products = await prisma.$queryRaw`
-    SELECT *  FROM dbo.WP_Productos_Usuario(${userId})
-  `;
+  const products = await executeWithUserValidation(
+    Prisma.sql`SELECT * FROM dbo.WP_Productos_Usuario(${userId})`
+  );
 
   const parsedProducts = productSchema.array().parse(products);
 
@@ -56,8 +57,9 @@ export async function getProductImage(id: number) {
 }
 
 export async function getMarcas() {
-  const marcas = await prisma.$queryRaw`
-     dbo.WP_TraerMarcas @IDUsuario = 0 `;
+  const marcas = await executeWithUserValidation(
+    Prisma.sql`dbo.WP_TraerMarcas @IDUsuario = 0`
+  );
 
   const parsedMarcas = marcaSchema.array().parse(marcas);
 
@@ -65,9 +67,9 @@ export async function getMarcas() {
 }
 
 export async function getModelos(marca: string, modelo: string) {
-  const modelos = await prisma.$queryRaw`
-    dbo.WP_au_Modelo ${modelo}, ${marca}
-  `;
+  const modelos = await executeWithUserValidation(
+    Prisma.sql`dbo.WP_au_Modelo ${modelo}, ${marca}`
+  );
 
   const parsedModelos = modeloSchema.array().parse(modelos);
 
@@ -75,9 +77,9 @@ export async function getModelos(marca: string, modelo: string) {
 }
 
 export async function getHasComercios() {
-  const hasComercios: HasComercios = await prisma.$queryRaw`
-    dbo.WP_Datos_Comercios
-  `;
+  const hasComercios: HasComercios = await executeWithUserValidation(
+    Prisma.sql`dbo.WP_Datos_Comercios`
+  );
 
   const parsedHasComercios = hasComerciosSchema.parse(hasComercios);
 

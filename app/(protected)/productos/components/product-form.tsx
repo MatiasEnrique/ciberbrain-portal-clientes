@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState, useEffect, useRef, useMemo, useTransition } from "react";
+import { useState, useRef, useMemo, useTransition } from "react";
 import { useDebounce } from "use-debounce";
 import { format } from "date-fns";
 import { CalendarIcon, UploadCloud, X } from "lucide-react";
@@ -76,90 +76,32 @@ export default function ProductForm({
     },
   });
 
+  // Controlled input values
   const [modeloInputValue, setModeloInputValue] = useState("");
-  const [debouncedModeloInput] = useDebounce(modeloInputValue, 700);
-  const [debouncedValidationTriggerInput] = useDebounce(modeloInputValue, 1500);
-
   const [marcaInputValue, setMarcaInputValue] = useState("");
-
   const [nroSerieInputValue, setNroSerieInputValue] = useState("");
+  const [comercioInputValue, setComercioInputValue] = useState("");
+
+  // Popover open state
+  const [isModeloPopoverOpen, setIsModeloPopoverOpen] = useState(false);
+  const [isMarcaPopoverOpen, setIsMarcaPopoverOpen] = useState(false);
+
+  // Debounced values for queries only
+  const [debouncedModeloInput] = useDebounce(modeloInputValue, 700);
   const [debouncedNroSerieValidationTriggerInput] = useDebounce(
     nroSerieInputValue,
     2000
   );
-
-  const [comercioInputValue, setComercioInputValue] = useState("");
   const [debouncedComercioValidationTriggerInput] = useDebounce(
     comercioInputValue,
     1500
   );
 
-  const [isModeloPopoverOpen, setIsModeloPopoverOpen] = useState(false);
-  const [isMarcaPopoverOpen, setIsMarcaPopoverOpen] = useState(false);
-
+  // Always derive current values from form state
   const currentModeloValue = form.watch("codigo");
   const currentMarcaValue = form.watch("marca");
 
-  useEffect(() => {
-    if (modeloInputValue === "") {
-      form.setValue("codigo", "", { shouldValidate: false });
-      form.clearErrors("codigo");
-      return;
-    }
-    if (debouncedValidationTriggerInput) {
-      form.setValue("codigo", debouncedValidationTriggerInput, {
-        shouldValidate: true,
-      });
-    }
-  }, [modeloInputValue, debouncedValidationTriggerInput, form]);
-
-  useEffect(() => {
-    if (marcaInputValue === "") {
-      form.setValue("marca", 0, { shouldValidate: false });
-      form.clearErrors("marca");
-    }
-  }, [marcaInputValue, form]);
-
-  useEffect(() => {
-    setModeloInputValue("");
-    form.setValue("codigo", "", { shouldValidate: false });
-    form.clearErrors("codigo");
-    setIsModeloPopoverOpen(false);
-  }, [currentMarcaValue, form]);
-
-  useEffect(() => {
-    if (nroSerieInputValue === "") {
-      form.setValue("nroSerie", "", { shouldValidate: false });
-      form.clearErrors("nroSerie");
-      return;
-    }
-
-    if (debouncedNroSerieValidationTriggerInput && currentModeloValue) {
-      form.setValue("nroSerie", debouncedNroSerieValidationTriggerInput, {
-        shouldValidate: true,
-      });
-    }
-  }, [
-    nroSerieInputValue,
-    debouncedNroSerieValidationTriggerInput,
-    currentModeloValue,
-    form,
-  ]);
-
-  useEffect(() => {
-    if (comercioInputValue === "") {
-      form.setValue("comercio", "", { shouldValidate: false });
-      form.clearErrors("comercio");
-      return;
-    }
-
-    if (debouncedComercioValidationTriggerInput) {
-      form.setValue("comercio", debouncedComercioValidationTriggerInput, {
-        shouldValidate: true,
-      });
-    }
-  }, [comercioInputValue, debouncedComercioValidationTriggerInput, form]);
-
+  // Query for modelos
   const { data: modelosData, isLoading: isLoadingModelos } = useQuery<
     Modelo[],
     Error,
@@ -198,6 +140,7 @@ export default function ProductForm({
     placeholderData: (previousData) => previousData,
   });
 
+  // Query for marcas
   const { data: marcasData, isLoading: isLoadingMarcas } = useQuery<
     Marca[],
     Error,
@@ -222,6 +165,67 @@ export default function ProductForm({
     },
     placeholderData: (previousData) => previousData,
   });
+
+  // Handlers for input changes and selection
+  function handleMarcaInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setMarcaInputValue(e.target.value);
+    form.clearErrors("marca");
+    if (e.target.value.length > 0) {
+      setIsMarcaPopoverOpen(true);
+    } else {
+      form.setValue("marca", 0, { shouldValidate: false });
+      setIsMarcaPopoverOpen(false);
+    }
+  }
+
+  function handleMarcaSelect(currentValue: string) {
+    const selectedMarca = marcasData?.find((m) => m.Marca === currentValue);
+    if (selectedMarca) {
+      setMarcaInputValue(selectedMarca.Marca);
+      form.setValue("marca", selectedMarca.Codigo, { shouldValidate: true });
+      setIsMarcaPopoverOpen(false);
+      // Reset modelo input and value when marca changes
+      setModeloInputValue("");
+      form.setValue("codigo", "", { shouldValidate: false });
+      form.clearErrors("codigo");
+    }
+    form.setFocus("codigo");
+  }
+
+  function handleModeloInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setModeloInputValue(e.target.value);
+    form.clearErrors("codigo");
+    if (e.target.value.length > 0) {
+      setIsModeloPopoverOpen(true);
+    } else {
+      setIsModeloPopoverOpen(false);
+    }
+  }
+
+  function handleModeloSelect(currentValue: string) {
+    const selectedModelo = modelosData?.find((m) => m.Codigo === currentValue);
+    setModeloInputValue(currentValue);
+    form.setValue("codigo", currentValue, { shouldValidate: true });
+    if (selectedModelo) {
+      form.setValue("descripcion", selectedModelo.Descripcion, {
+        shouldValidate: false,
+      });
+    }
+    setIsModeloPopoverOpen(false);
+    form.setFocus("nroSerie");
+  }
+
+  function handleNroSerieInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setNroSerieInputValue(e.target.value);
+    form.setValue("nroSerie", e.target.value, { shouldValidate: true });
+    form.clearErrors("nroSerie");
+  }
+
+  function handleComercioInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setComercioInputValue(e.target.value);
+    form.setValue("comercio", e.target.value, { shouldValidate: true });
+    form.clearErrors("comercio");
+  }
 
   function handleSubmit(values: RegisterProductPayload) {
     startTransition(async () => {
@@ -259,9 +263,7 @@ export default function ProductForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-          console.log(errors);
-        })}
+        onSubmit={form.handleSubmit(handleSubmit, (errors) => {})}
         className="space-y-4"
       >
         <FormField
@@ -280,16 +282,7 @@ export default function ProductForm({
                     <Input
                       placeholder="Escribe para buscar marcas..."
                       value={marcaInputValue}
-                      onChange={(e) => {
-                        form.clearErrors("marca");
-                        setMarcaInputValue(e.target.value);
-                        if (e.target.value.length > 0) {
-                          setIsMarcaPopoverOpen(true);
-                        } else {
-                          form.setValue("marca", 0, { shouldValidate: false });
-                          setIsMarcaPopoverOpen(false);
-                        }
-                      }}
+                      onChange={handleMarcaInputChange}
                       className="text-left"
                       disabled={isPending}
                     />
@@ -322,19 +315,7 @@ export default function ProductForm({
                             <CommandItem
                               key={marca.Codigo}
                               value={marca.Marca}
-                              onSelect={(currentValue) => {
-                                const selectedMarca = marcasData.find(
-                                  (m) => m.Marca === currentValue
-                                );
-                                if (selectedMarca) {
-                                  setMarcaInputValue(selectedMarca.Marca);
-                                  form.setValue("marca", selectedMarca.Codigo, {
-                                    shouldValidate: true,
-                                  });
-                                  setIsMarcaPopoverOpen(false);
-                                  form.setFocus("codigo");
-                                }
-                              }}
+                              onSelect={handleMarcaSelect}
                             >
                               <div className="flex flex-col">
                                 <span className="font-medium">
@@ -369,15 +350,7 @@ export default function ProductForm({
                     <Input
                       placeholder="Escribe para buscar modelos..."
                       value={modeloInputValue}
-                      onChange={(e) => {
-                        form.clearErrors("codigo");
-                        setModeloInputValue(e.target.value);
-                        if (e.target.value.length > 0) {
-                          setIsModeloPopoverOpen(true);
-                        } else {
-                          setIsModeloPopoverOpen(false);
-                        }
-                      }}
+                      onChange={handleModeloInputChange}
                       className="text-left "
                       disabled={isPending}
                     />
@@ -408,21 +381,7 @@ export default function ProductForm({
                             <CommandItem
                               key={modelo.Codigo}
                               value={modelo.Codigo}
-                              onSelect={(currentValue) => {
-                                setModeloInputValue(currentValue);
-                                form.setValue("codigo", currentValue, {
-                                  shouldValidate: true,
-                                });
-                                form.setValue(
-                                  "descripcion",
-                                  modelo.Descripcion,
-                                  {
-                                    shouldValidate: false,
-                                  }
-                                );
-                                setIsModeloPopoverOpen(false);
-                                form.setFocus("nroSerie");
-                              }}
+                              onSelect={handleModeloSelect}
                             >
                               <div className="flex flex-col">
                                 <span className="font-medium">
@@ -455,7 +414,7 @@ export default function ProductForm({
                 <Input
                   placeholder="Ej: ABC123XYZ789"
                   value={nroSerieInputValue}
-                  onChange={(e) => setNroSerieInputValue(e.target.value)}
+                  onChange={handleNroSerieInputChange}
                   disabled={isPending}
                 />
               </FormControl>
@@ -474,7 +433,7 @@ export default function ProductForm({
                 <Input
                   placeholder="Nombre del Comercio"
                   value={comercioInputValue}
-                  onChange={(e) => setComercioInputValue(e.target.value)}
+                  onChange={handleComercioInputChange}
                   disabled={isPending}
                 />
               </FormControl>

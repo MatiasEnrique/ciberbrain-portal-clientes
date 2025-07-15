@@ -28,6 +28,11 @@ export type Imagen = $Result.DefaultSelection<Prisma.$ImagenPayload>
  * 
  */
 export type Marca = $Result.DefaultSelection<Prisma.$MarcaPayload>
+/**
+ * Model EditableText
+ * 
+ */
+export type EditableText = $Result.DefaultSelection<Prisma.$EditableTextPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -183,6 +188,16 @@ export class PrismaClient<
     * ```
     */
   get marca(): Prisma.MarcaDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.editableText`: Exposes CRUD operations for the **EditableText** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EditableTexts
+    * const editableTexts = await prisma.editableText.findMany()
+    * ```
+    */
+  get editableText(): Prisma.EditableTextDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -625,7 +640,8 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Imagen: 'Imagen',
-    Marca: 'Marca'
+    Marca: 'Marca',
+    EditableText: 'EditableText'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -644,7 +660,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "imagen" | "marca"
+      modelProps: "user" | "imagen" | "marca" | "editableText"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -846,6 +862,72 @@ export namespace Prisma {
           }
         }
       }
+      EditableText: {
+        payload: Prisma.$EditableTextPayload<ExtArgs>
+        fields: Prisma.EditableTextFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EditableTextFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EditableTextFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload>
+          }
+          findFirst: {
+            args: Prisma.EditableTextFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EditableTextFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload>
+          }
+          findMany: {
+            args: Prisma.EditableTextFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload>[]
+          }
+          create: {
+            args: Prisma.EditableTextCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload>
+          }
+          createMany: {
+            args: Prisma.EditableTextCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.EditableTextDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload>
+          }
+          update: {
+            args: Prisma.EditableTextUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload>
+          }
+          deleteMany: {
+            args: Prisma.EditableTextDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EditableTextUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.EditableTextUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EditableTextPayload>
+          }
+          aggregate: {
+            args: Prisma.EditableTextAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEditableText>
+          }
+          groupBy: {
+            args: Prisma.EditableTextGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EditableTextGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EditableTextCountArgs<ExtArgs>
+            result: $Utils.Optional<EditableTextCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -933,6 +1015,7 @@ export namespace Prisma {
     user?: UserOmit
     imagen?: ImagenOmit
     marca?: MarcaOmit
+    editableText?: EditableTextOmit
   }
 
   /* Types for Logging */
@@ -4118,6 +4201,962 @@ export namespace Prisma {
 
 
   /**
+   * Model EditableText
+   */
+
+  export type AggregateEditableText = {
+    _count: EditableTextCountAggregateOutputType | null
+    _avg: EditableTextAvgAggregateOutputType | null
+    _sum: EditableTextSumAggregateOutputType | null
+    _min: EditableTextMinAggregateOutputType | null
+    _max: EditableTextMaxAggregateOutputType | null
+  }
+
+  export type EditableTextAvgAggregateOutputType = {
+    ID: number | null
+    Perfil: number | null
+    ModifiedBy: number | null
+  }
+
+  export type EditableTextSumAggregateOutputType = {
+    ID: number | null
+    Perfil: number | null
+    ModifiedBy: number | null
+  }
+
+  export type EditableTextMinAggregateOutputType = {
+    ID: number | null
+    PageName: string | null
+    ElementId: string | null
+    Content: string | null
+    Perfil: number | null
+    Entorno: string | null
+    LastModified: Date | null
+    ModifiedBy: number | null
+  }
+
+  export type EditableTextMaxAggregateOutputType = {
+    ID: number | null
+    PageName: string | null
+    ElementId: string | null
+    Content: string | null
+    Perfil: number | null
+    Entorno: string | null
+    LastModified: Date | null
+    ModifiedBy: number | null
+  }
+
+  export type EditableTextCountAggregateOutputType = {
+    ID: number
+    PageName: number
+    ElementId: number
+    Content: number
+    Perfil: number
+    Entorno: number
+    LastModified: number
+    ModifiedBy: number
+    _all: number
+  }
+
+
+  export type EditableTextAvgAggregateInputType = {
+    ID?: true
+    Perfil?: true
+    ModifiedBy?: true
+  }
+
+  export type EditableTextSumAggregateInputType = {
+    ID?: true
+    Perfil?: true
+    ModifiedBy?: true
+  }
+
+  export type EditableTextMinAggregateInputType = {
+    ID?: true
+    PageName?: true
+    ElementId?: true
+    Content?: true
+    Perfil?: true
+    Entorno?: true
+    LastModified?: true
+    ModifiedBy?: true
+  }
+
+  export type EditableTextMaxAggregateInputType = {
+    ID?: true
+    PageName?: true
+    ElementId?: true
+    Content?: true
+    Perfil?: true
+    Entorno?: true
+    LastModified?: true
+    ModifiedBy?: true
+  }
+
+  export type EditableTextCountAggregateInputType = {
+    ID?: true
+    PageName?: true
+    ElementId?: true
+    Content?: true
+    Perfil?: true
+    Entorno?: true
+    LastModified?: true
+    ModifiedBy?: true
+    _all?: true
+  }
+
+  export type EditableTextAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EditableText to aggregate.
+     */
+    where?: EditableTextWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditableTexts to fetch.
+     */
+    orderBy?: EditableTextOrderByWithRelationInput | EditableTextOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EditableTextWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditableTexts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditableTexts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EditableTexts
+    **/
+    _count?: true | EditableTextCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EditableTextAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EditableTextSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EditableTextMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EditableTextMaxAggregateInputType
+  }
+
+  export type GetEditableTextAggregateType<T extends EditableTextAggregateArgs> = {
+        [P in keyof T & keyof AggregateEditableText]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEditableText[P]>
+      : GetScalarType<T[P], AggregateEditableText[P]>
+  }
+
+
+
+
+  export type EditableTextGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EditableTextWhereInput
+    orderBy?: EditableTextOrderByWithAggregationInput | EditableTextOrderByWithAggregationInput[]
+    by: EditableTextScalarFieldEnum[] | EditableTextScalarFieldEnum
+    having?: EditableTextScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EditableTextCountAggregateInputType | true
+    _avg?: EditableTextAvgAggregateInputType
+    _sum?: EditableTextSumAggregateInputType
+    _min?: EditableTextMinAggregateInputType
+    _max?: EditableTextMaxAggregateInputType
+  }
+
+  export type EditableTextGroupByOutputType = {
+    ID: number
+    PageName: string
+    ElementId: string
+    Content: string | null
+    Perfil: number | null
+    Entorno: string | null
+    LastModified: Date
+    ModifiedBy: number | null
+    _count: EditableTextCountAggregateOutputType | null
+    _avg: EditableTextAvgAggregateOutputType | null
+    _sum: EditableTextSumAggregateOutputType | null
+    _min: EditableTextMinAggregateOutputType | null
+    _max: EditableTextMaxAggregateOutputType | null
+  }
+
+  type GetEditableTextGroupByPayload<T extends EditableTextGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EditableTextGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EditableTextGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EditableTextGroupByOutputType[P]>
+            : GetScalarType<T[P], EditableTextGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EditableTextSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    ID?: boolean
+    PageName?: boolean
+    ElementId?: boolean
+    Content?: boolean
+    Perfil?: boolean
+    Entorno?: boolean
+    LastModified?: boolean
+    ModifiedBy?: boolean
+  }, ExtArgs["result"]["editableText"]>
+
+
+
+  export type EditableTextSelectScalar = {
+    ID?: boolean
+    PageName?: boolean
+    ElementId?: boolean
+    Content?: boolean
+    Perfil?: boolean
+    Entorno?: boolean
+    LastModified?: boolean
+    ModifiedBy?: boolean
+  }
+
+  export type EditableTextOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"ID" | "PageName" | "ElementId" | "Content" | "Perfil" | "Entorno" | "LastModified" | "ModifiedBy", ExtArgs["result"]["editableText"]>
+
+  export type $EditableTextPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EditableText"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      ID: number
+      PageName: string
+      ElementId: string
+      Content: string | null
+      Perfil: number | null
+      Entorno: string | null
+      LastModified: Date
+      ModifiedBy: number | null
+    }, ExtArgs["result"]["editableText"]>
+    composites: {}
+  }
+
+  type EditableTextGetPayload<S extends boolean | null | undefined | EditableTextDefaultArgs> = $Result.GetResult<Prisma.$EditableTextPayload, S>
+
+  type EditableTextCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EditableTextFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EditableTextCountAggregateInputType | true
+    }
+
+  export interface EditableTextDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EditableText'], meta: { name: 'EditableText' } }
+    /**
+     * Find zero or one EditableText that matches the filter.
+     * @param {EditableTextFindUniqueArgs} args - Arguments to find a EditableText
+     * @example
+     * // Get one EditableText
+     * const editableText = await prisma.editableText.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EditableTextFindUniqueArgs>(args: SelectSubset<T, EditableTextFindUniqueArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EditableText that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EditableTextFindUniqueOrThrowArgs} args - Arguments to find a EditableText
+     * @example
+     * // Get one EditableText
+     * const editableText = await prisma.editableText.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EditableTextFindUniqueOrThrowArgs>(args: SelectSubset<T, EditableTextFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EditableText that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditableTextFindFirstArgs} args - Arguments to find a EditableText
+     * @example
+     * // Get one EditableText
+     * const editableText = await prisma.editableText.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EditableTextFindFirstArgs>(args?: SelectSubset<T, EditableTextFindFirstArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EditableText that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditableTextFindFirstOrThrowArgs} args - Arguments to find a EditableText
+     * @example
+     * // Get one EditableText
+     * const editableText = await prisma.editableText.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EditableTextFindFirstOrThrowArgs>(args?: SelectSubset<T, EditableTextFindFirstOrThrowArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EditableTexts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditableTextFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EditableTexts
+     * const editableTexts = await prisma.editableText.findMany()
+     * 
+     * // Get first 10 EditableTexts
+     * const editableTexts = await prisma.editableText.findMany({ take: 10 })
+     * 
+     * // Only select the `ID`
+     * const editableTextWithIDOnly = await prisma.editableText.findMany({ select: { ID: true } })
+     * 
+     */
+    findMany<T extends EditableTextFindManyArgs>(args?: SelectSubset<T, EditableTextFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EditableText.
+     * @param {EditableTextCreateArgs} args - Arguments to create a EditableText.
+     * @example
+     * // Create one EditableText
+     * const EditableText = await prisma.editableText.create({
+     *   data: {
+     *     // ... data to create a EditableText
+     *   }
+     * })
+     * 
+     */
+    create<T extends EditableTextCreateArgs>(args: SelectSubset<T, EditableTextCreateArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EditableTexts.
+     * @param {EditableTextCreateManyArgs} args - Arguments to create many EditableTexts.
+     * @example
+     * // Create many EditableTexts
+     * const editableText = await prisma.editableText.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EditableTextCreateManyArgs>(args?: SelectSubset<T, EditableTextCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a EditableText.
+     * @param {EditableTextDeleteArgs} args - Arguments to delete one EditableText.
+     * @example
+     * // Delete one EditableText
+     * const EditableText = await prisma.editableText.delete({
+     *   where: {
+     *     // ... filter to delete one EditableText
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EditableTextDeleteArgs>(args: SelectSubset<T, EditableTextDeleteArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EditableText.
+     * @param {EditableTextUpdateArgs} args - Arguments to update one EditableText.
+     * @example
+     * // Update one EditableText
+     * const editableText = await prisma.editableText.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EditableTextUpdateArgs>(args: SelectSubset<T, EditableTextUpdateArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EditableTexts.
+     * @param {EditableTextDeleteManyArgs} args - Arguments to filter EditableTexts to delete.
+     * @example
+     * // Delete a few EditableTexts
+     * const { count } = await prisma.editableText.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EditableTextDeleteManyArgs>(args?: SelectSubset<T, EditableTextDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EditableTexts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditableTextUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EditableTexts
+     * const editableText = await prisma.editableText.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EditableTextUpdateManyArgs>(args: SelectSubset<T, EditableTextUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one EditableText.
+     * @param {EditableTextUpsertArgs} args - Arguments to update or create a EditableText.
+     * @example
+     * // Update or create a EditableText
+     * const editableText = await prisma.editableText.upsert({
+     *   create: {
+     *     // ... data to create a EditableText
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EditableText we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EditableTextUpsertArgs>(args: SelectSubset<T, EditableTextUpsertArgs<ExtArgs>>): Prisma__EditableTextClient<$Result.GetResult<Prisma.$EditableTextPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EditableTexts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditableTextCountArgs} args - Arguments to filter EditableTexts to count.
+     * @example
+     * // Count the number of EditableTexts
+     * const count = await prisma.editableText.count({
+     *   where: {
+     *     // ... the filter for the EditableTexts we want to count
+     *   }
+     * })
+    **/
+    count<T extends EditableTextCountArgs>(
+      args?: Subset<T, EditableTextCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EditableTextCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EditableText.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditableTextAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EditableTextAggregateArgs>(args: Subset<T, EditableTextAggregateArgs>): Prisma.PrismaPromise<GetEditableTextAggregateType<T>>
+
+    /**
+     * Group by EditableText.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EditableTextGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EditableTextGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EditableTextGroupByArgs['orderBy'] }
+        : { orderBy?: EditableTextGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EditableTextGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEditableTextGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EditableText model
+   */
+  readonly fields: EditableTextFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EditableText.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EditableTextClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EditableText model
+   */
+  interface EditableTextFieldRefs {
+    readonly ID: FieldRef<"EditableText", 'Int'>
+    readonly PageName: FieldRef<"EditableText", 'String'>
+    readonly ElementId: FieldRef<"EditableText", 'String'>
+    readonly Content: FieldRef<"EditableText", 'String'>
+    readonly Perfil: FieldRef<"EditableText", 'Int'>
+    readonly Entorno: FieldRef<"EditableText", 'String'>
+    readonly LastModified: FieldRef<"EditableText", 'DateTime'>
+    readonly ModifiedBy: FieldRef<"EditableText", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EditableText findUnique
+   */
+  export type EditableTextFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * Filter, which EditableText to fetch.
+     */
+    where: EditableTextWhereUniqueInput
+  }
+
+  /**
+   * EditableText findUniqueOrThrow
+   */
+  export type EditableTextFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * Filter, which EditableText to fetch.
+     */
+    where: EditableTextWhereUniqueInput
+  }
+
+  /**
+   * EditableText findFirst
+   */
+  export type EditableTextFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * Filter, which EditableText to fetch.
+     */
+    where?: EditableTextWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditableTexts to fetch.
+     */
+    orderBy?: EditableTextOrderByWithRelationInput | EditableTextOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EditableTexts.
+     */
+    cursor?: EditableTextWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditableTexts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditableTexts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EditableTexts.
+     */
+    distinct?: EditableTextScalarFieldEnum | EditableTextScalarFieldEnum[]
+  }
+
+  /**
+   * EditableText findFirstOrThrow
+   */
+  export type EditableTextFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * Filter, which EditableText to fetch.
+     */
+    where?: EditableTextWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditableTexts to fetch.
+     */
+    orderBy?: EditableTextOrderByWithRelationInput | EditableTextOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EditableTexts.
+     */
+    cursor?: EditableTextWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditableTexts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditableTexts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EditableTexts.
+     */
+    distinct?: EditableTextScalarFieldEnum | EditableTextScalarFieldEnum[]
+  }
+
+  /**
+   * EditableText findMany
+   */
+  export type EditableTextFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * Filter, which EditableTexts to fetch.
+     */
+    where?: EditableTextWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EditableTexts to fetch.
+     */
+    orderBy?: EditableTextOrderByWithRelationInput | EditableTextOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EditableTexts.
+     */
+    cursor?: EditableTextWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EditableTexts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EditableTexts.
+     */
+    skip?: number
+    distinct?: EditableTextScalarFieldEnum | EditableTextScalarFieldEnum[]
+  }
+
+  /**
+   * EditableText create
+   */
+  export type EditableTextCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * The data needed to create a EditableText.
+     */
+    data: XOR<EditableTextCreateInput, EditableTextUncheckedCreateInput>
+  }
+
+  /**
+   * EditableText createMany
+   */
+  export type EditableTextCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EditableTexts.
+     */
+    data: EditableTextCreateManyInput | EditableTextCreateManyInput[]
+  }
+
+  /**
+   * EditableText update
+   */
+  export type EditableTextUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * The data needed to update a EditableText.
+     */
+    data: XOR<EditableTextUpdateInput, EditableTextUncheckedUpdateInput>
+    /**
+     * Choose, which EditableText to update.
+     */
+    where: EditableTextWhereUniqueInput
+  }
+
+  /**
+   * EditableText updateMany
+   */
+  export type EditableTextUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EditableTexts.
+     */
+    data: XOR<EditableTextUpdateManyMutationInput, EditableTextUncheckedUpdateManyInput>
+    /**
+     * Filter which EditableTexts to update
+     */
+    where?: EditableTextWhereInput
+    /**
+     * Limit how many EditableTexts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EditableText upsert
+   */
+  export type EditableTextUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * The filter to search for the EditableText to update in case it exists.
+     */
+    where: EditableTextWhereUniqueInput
+    /**
+     * In case the EditableText found by the `where` argument doesn't exist, create a new EditableText with this data.
+     */
+    create: XOR<EditableTextCreateInput, EditableTextUncheckedCreateInput>
+    /**
+     * In case the EditableText was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EditableTextUpdateInput, EditableTextUncheckedUpdateInput>
+  }
+
+  /**
+   * EditableText delete
+   */
+  export type EditableTextDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+    /**
+     * Filter which EditableText to delete.
+     */
+    where: EditableTextWhereUniqueInput
+  }
+
+  /**
+   * EditableText deleteMany
+   */
+  export type EditableTextDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EditableTexts to delete
+     */
+    where?: EditableTextWhereInput
+    /**
+     * Limit how many EditableTexts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EditableText without action
+   */
+  export type EditableTextDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EditableText
+     */
+    select?: EditableTextSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EditableText
+     */
+    omit?: EditableTextOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -4190,6 +5229,20 @@ export namespace Prisma {
   };
 
   export type MarcaScalarFieldEnum = (typeof MarcaScalarFieldEnum)[keyof typeof MarcaScalarFieldEnum]
+
+
+  export const EditableTextScalarFieldEnum: {
+    ID: 'ID',
+    PageName: 'PageName',
+    ElementId: 'ElementId',
+    Content: 'Content',
+    Perfil: 'Perfil',
+    Entorno: 'Entorno',
+    LastModified: 'LastModified',
+    ModifiedBy: 'ModifiedBy'
+  };
+
+  export type EditableTextScalarFieldEnum = (typeof EditableTextScalarFieldEnum)[keyof typeof EditableTextScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -4332,10 +5385,10 @@ export namespace Prisma {
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     ID?: number
+    CodCli?: number
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    CodCli?: IntNullableFilter<"User"> | number | null
     EMail?: StringNullableFilter<"User"> | string | null
     Password?: StringNullableFilter<"User"> | string | null
     Perfil?: IntNullableFilter<"User"> | number | null
@@ -4369,7 +5422,7 @@ export namespace Prisma {
     EMailAnterior?: StringNullableFilter<"User"> | string | null
     Latitud?: FloatNullableFilter<"User"> | number | null
     Longitud?: FloatNullableFilter<"User"> | number | null
-  }, "ID">
+  }, "ID" | "CodCli">
 
   export type UserOrderByWithAggregationInput = {
     ID?: SortOrder
@@ -4546,6 +5599,76 @@ export namespace Prisma {
     NOT?: MarcaScalarWhereWithAggregatesInput | MarcaScalarWhereWithAggregatesInput[]
     codigo?: IntWithAggregatesFilter<"Marca"> | number
     descripcion?: StringWithAggregatesFilter<"Marca"> | string
+  }
+
+  export type EditableTextWhereInput = {
+    AND?: EditableTextWhereInput | EditableTextWhereInput[]
+    OR?: EditableTextWhereInput[]
+    NOT?: EditableTextWhereInput | EditableTextWhereInput[]
+    ID?: IntFilter<"EditableText"> | number
+    PageName?: StringFilter<"EditableText"> | string
+    ElementId?: StringFilter<"EditableText"> | string
+    Content?: StringNullableFilter<"EditableText"> | string | null
+    Perfil?: IntNullableFilter<"EditableText"> | number | null
+    Entorno?: StringNullableFilter<"EditableText"> | string | null
+    LastModified?: DateTimeFilter<"EditableText"> | Date | string
+    ModifiedBy?: IntNullableFilter<"EditableText"> | number | null
+  }
+
+  export type EditableTextOrderByWithRelationInput = {
+    ID?: SortOrder
+    PageName?: SortOrder
+    ElementId?: SortOrder
+    Content?: SortOrderInput | SortOrder
+    Perfil?: SortOrderInput | SortOrder
+    Entorno?: SortOrderInput | SortOrder
+    LastModified?: SortOrder
+    ModifiedBy?: SortOrderInput | SortOrder
+  }
+
+  export type EditableTextWhereUniqueInput = Prisma.AtLeast<{
+    ID?: number
+    PageName_ElementId_Perfil_Entorno?: EditableTextPageNameElementIdPerfilEntornoCompoundUniqueInput
+    AND?: EditableTextWhereInput | EditableTextWhereInput[]
+    OR?: EditableTextWhereInput[]
+    NOT?: EditableTextWhereInput | EditableTextWhereInput[]
+    PageName?: StringFilter<"EditableText"> | string
+    ElementId?: StringFilter<"EditableText"> | string
+    Content?: StringNullableFilter<"EditableText"> | string | null
+    Perfil?: IntNullableFilter<"EditableText"> | number | null
+    Entorno?: StringNullableFilter<"EditableText"> | string | null
+    LastModified?: DateTimeFilter<"EditableText"> | Date | string
+    ModifiedBy?: IntNullableFilter<"EditableText"> | number | null
+  }, "ID" | "PageName_ElementId_Perfil_Entorno">
+
+  export type EditableTextOrderByWithAggregationInput = {
+    ID?: SortOrder
+    PageName?: SortOrder
+    ElementId?: SortOrder
+    Content?: SortOrderInput | SortOrder
+    Perfil?: SortOrderInput | SortOrder
+    Entorno?: SortOrderInput | SortOrder
+    LastModified?: SortOrder
+    ModifiedBy?: SortOrderInput | SortOrder
+    _count?: EditableTextCountOrderByAggregateInput
+    _avg?: EditableTextAvgOrderByAggregateInput
+    _max?: EditableTextMaxOrderByAggregateInput
+    _min?: EditableTextMinOrderByAggregateInput
+    _sum?: EditableTextSumOrderByAggregateInput
+  }
+
+  export type EditableTextScalarWhereWithAggregatesInput = {
+    AND?: EditableTextScalarWhereWithAggregatesInput | EditableTextScalarWhereWithAggregatesInput[]
+    OR?: EditableTextScalarWhereWithAggregatesInput[]
+    NOT?: EditableTextScalarWhereWithAggregatesInput | EditableTextScalarWhereWithAggregatesInput[]
+    ID?: IntWithAggregatesFilter<"EditableText"> | number
+    PageName?: StringWithAggregatesFilter<"EditableText"> | string
+    ElementId?: StringWithAggregatesFilter<"EditableText"> | string
+    Content?: StringNullableWithAggregatesFilter<"EditableText"> | string | null
+    Perfil?: IntNullableWithAggregatesFilter<"EditableText"> | number | null
+    Entorno?: StringNullableWithAggregatesFilter<"EditableText"> | string | null
+    LastModified?: DateTimeWithAggregatesFilter<"EditableText"> | Date | string
+    ModifiedBy?: IntNullableWithAggregatesFilter<"EditableText"> | number | null
   }
 
   export type UserCreateInput = {
@@ -4899,6 +6022,79 @@ export namespace Prisma {
   export type MarcaUncheckedUpdateManyInput = {
     codigo?: IntFieldUpdateOperationsInput | number
     descripcion?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type EditableTextCreateInput = {
+    PageName: string
+    ElementId: string
+    Content?: string | null
+    Perfil?: number | null
+    Entorno?: string | null
+    LastModified?: Date | string
+    ModifiedBy?: number | null
+  }
+
+  export type EditableTextUncheckedCreateInput = {
+    ID?: number
+    PageName: string
+    ElementId: string
+    Content?: string | null
+    Perfil?: number | null
+    Entorno?: string | null
+    LastModified?: Date | string
+    ModifiedBy?: number | null
+  }
+
+  export type EditableTextUpdateInput = {
+    PageName?: StringFieldUpdateOperationsInput | string
+    ElementId?: StringFieldUpdateOperationsInput | string
+    Content?: NullableStringFieldUpdateOperationsInput | string | null
+    Perfil?: NullableIntFieldUpdateOperationsInput | number | null
+    Entorno?: NullableStringFieldUpdateOperationsInput | string | null
+    LastModified?: DateTimeFieldUpdateOperationsInput | Date | string
+    ModifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type EditableTextUncheckedUpdateInput = {
+    ID?: IntFieldUpdateOperationsInput | number
+    PageName?: StringFieldUpdateOperationsInput | string
+    ElementId?: StringFieldUpdateOperationsInput | string
+    Content?: NullableStringFieldUpdateOperationsInput | string | null
+    Perfil?: NullableIntFieldUpdateOperationsInput | number | null
+    Entorno?: NullableStringFieldUpdateOperationsInput | string | null
+    LastModified?: DateTimeFieldUpdateOperationsInput | Date | string
+    ModifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type EditableTextCreateManyInput = {
+    PageName: string
+    ElementId: string
+    Content?: string | null
+    Perfil?: number | null
+    Entorno?: string | null
+    LastModified?: Date | string
+    ModifiedBy?: number | null
+  }
+
+  export type EditableTextUpdateManyMutationInput = {
+    PageName?: StringFieldUpdateOperationsInput | string
+    ElementId?: StringFieldUpdateOperationsInput | string
+    Content?: NullableStringFieldUpdateOperationsInput | string | null
+    Perfil?: NullableIntFieldUpdateOperationsInput | number | null
+    Entorno?: NullableStringFieldUpdateOperationsInput | string | null
+    LastModified?: DateTimeFieldUpdateOperationsInput | Date | string
+    ModifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type EditableTextUncheckedUpdateManyInput = {
+    ID?: IntFieldUpdateOperationsInput | number
+    PageName?: StringFieldUpdateOperationsInput | string
+    ElementId?: StringFieldUpdateOperationsInput | string
+    Content?: NullableStringFieldUpdateOperationsInput | string | null
+    Perfil?: NullableIntFieldUpdateOperationsInput | number | null
+    Entorno?: NullableStringFieldUpdateOperationsInput | string | null
+    LastModified?: DateTimeFieldUpdateOperationsInput | Date | string
+    ModifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -5315,6 +6511,58 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type EditableTextPageNameElementIdPerfilEntornoCompoundUniqueInput = {
+    PageName: string
+    ElementId: string
+    Perfil: number
+    Entorno: string
+  }
+
+  export type EditableTextCountOrderByAggregateInput = {
+    ID?: SortOrder
+    PageName?: SortOrder
+    ElementId?: SortOrder
+    Content?: SortOrder
+    Perfil?: SortOrder
+    Entorno?: SortOrder
+    LastModified?: SortOrder
+    ModifiedBy?: SortOrder
+  }
+
+  export type EditableTextAvgOrderByAggregateInput = {
+    ID?: SortOrder
+    Perfil?: SortOrder
+    ModifiedBy?: SortOrder
+  }
+
+  export type EditableTextMaxOrderByAggregateInput = {
+    ID?: SortOrder
+    PageName?: SortOrder
+    ElementId?: SortOrder
+    Content?: SortOrder
+    Perfil?: SortOrder
+    Entorno?: SortOrder
+    LastModified?: SortOrder
+    ModifiedBy?: SortOrder
+  }
+
+  export type EditableTextMinOrderByAggregateInput = {
+    ID?: SortOrder
+    PageName?: SortOrder
+    ElementId?: SortOrder
+    Content?: SortOrder
+    Perfil?: SortOrder
+    Entorno?: SortOrder
+    LastModified?: SortOrder
+    ModifiedBy?: SortOrder
+  }
+
+  export type EditableTextSumOrderByAggregateInput = {
+    ID?: SortOrder
+    Perfil?: SortOrder
+    ModifiedBy?: SortOrder
   }
 
   export type IntFieldUpdateOperationsInput = {

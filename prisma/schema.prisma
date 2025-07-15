@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   ID               Int     @id @map("ID")
-  CodCli           Int?     @map("CodCli")
+  CodCli           Int?     @map("CodCli") @unique
   EMail            String?  @map("EMail") @db.VarChar(50)
   Password         String?  @map("Password") @db.VarChar(20)
   Perfil           Int?     @map("Perfil")
@@ -69,5 +69,22 @@ model Marca {
 
   @@map("CC_Marcas")
 }
+
+// Editable text content system - using existing legacy table
+model EditableText {
+  ID          Int      @id @default(autoincrement()) @map("ID")
+  PageName    String   @map("PageName") @db.VarChar(100)
+  ElementId   String   @map("ElementId") @db.VarChar(100)
+  Content     String?  @map("Content") @db.Text
+  Perfil      Int?     @map("Perfil") @default(0)
+  Entorno     String?  @map("Entorno") @db.VarChar(50) @default("default")
+  LastModified DateTime @default(now()) @map("LastModified")
+  ModifiedBy  Int?     @map("ModifiedBy")
+
+  @@unique([PageName, ElementId, Perfil, Entorno])
+  @@map("WP_Texto_Pagina")
+}
+
+
 
 

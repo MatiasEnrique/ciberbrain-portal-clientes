@@ -11,15 +11,23 @@ import {
 import { LogoutButton } from "./logout-button";
 import { ModeToggle } from "./mode-toggle";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
+  const { data } = useSession();
+
   const navLinks = [
-    { href: "/productos", label: "Productos" },
-    { href: "/perfil", label: "Mi Perfil" },
-    { href: "/reparaciones", label: "Reparaciones" },
+    { href: "/contacto", label: "Contacto" },
     { href: "/servicio-tecnico", label: "Servicio Técnico" },
     { href: "/preguntas-frecuentes", label: "Preguntas frecuentes" },
   ];
+
+  if (data?.user) {
+    navLinks.unshift({ href: "/productos", label: "Productos" });
+    navLinks.unshift({ href: "/perfil", label: "Mi Perfil" });
+  } else {
+    navLinks.push({ href: "/auth/login", label: "Iniciar Sesión" });
+  }
 
   return (
     <div className="w-full bg-background">
@@ -27,7 +35,7 @@ export default function Navbar() {
         <nav className="relative mx-auto max-w-6xl rounded-2xl shadow-lg shadow-gray-900/5">
           <div className="absolute inset-0 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-md" />
           <div className="relative flex items-center justify-between px-8 py-4">
-            <div className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">
                   CB
@@ -36,7 +44,7 @@ export default function Navbar() {
               <span className="text-xl font-semibold text-foreground">
                 CiberBrain
               </span>
-            </div>
+            </Link>
 
             <div className="hidden md:flex items-center space-x-1">
               {navLinks.map((link) => (
