@@ -42,7 +42,7 @@ export default function Navbar() {
                 </span>
               </div>
               <span className="text-xl font-semibold text-foreground">
-                CiberBrain
+                {process.env.NEXT_PUBLIC_CLIENT_NAME}
               </span>
             </Link>
 

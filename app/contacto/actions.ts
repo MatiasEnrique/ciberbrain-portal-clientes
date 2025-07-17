@@ -139,7 +139,7 @@ export async function enviarMensajeContacto(formData: FormData) {
 
     await sendEmail(
       email,
-      "Hemos recibido tu mensaje - CiberBrain",
+      `Hemos recibido tu mensaje - ${process.env.NEXT_PUBLIC_CLIENT_NAME}`,
       confirmationHtml
     );
 

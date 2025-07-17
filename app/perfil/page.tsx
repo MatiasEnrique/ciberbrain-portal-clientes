@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import PerfilForm from "./components/perfil-form";
 import { prisma } from "@/lib/prisma";
-import { getPaises } from "@/app/(public)/servicio-tecnico/data";
+import { getPaises } from "@/app/servicio-tecnico/data";
 
 export default async function PerfilPage() {
   const session = await auth();

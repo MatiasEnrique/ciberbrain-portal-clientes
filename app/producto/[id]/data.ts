@@ -12,9 +12,9 @@ import { Prisma } from "@/prisma/@/generated/prisma";
 
 export async function getProducto(id: string, id_usuario: string) {
   try {
-    const query: Product[] = await executeWithUserValidation(
+    const query = (await executeWithUserValidation(
       Prisma.sql`exec WP_Datos_Producto @IDUsuario = ${id_usuario}, @IDProducto = ${id}`
-    );
+    )) as Product[];
 
     if (query.length === 0) {
       return null;

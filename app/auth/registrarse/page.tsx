@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { GalleryVerticalEnd } from "lucide-react";
 import { redirect } from "next/navigation";
 import RegisterForm from "./components/register-form";
-import { getPaises } from "@/app/(public)/servicio-tecnico/data";
+import { getPaises } from "@/app/servicio-tecnico/data";
 
 export default async function RegisterPage() {
   const session = await auth();
@@ -20,7 +20,7 @@ export default async function RegisterPage() {
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <GalleryVerticalEnd className="size-4" />
           </div>
-          CiberBrain
+          {process.env.NEXT_PUBLIC_CLIENT_NAME}
         </a>
         <RegisterForm paises={paises} />
       </div>

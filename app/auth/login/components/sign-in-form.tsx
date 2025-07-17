@@ -95,12 +95,12 @@ export function LoginForm() {
                   <FormItem>
                     <div className="flex items-center">
                       <FormLabel>Contraseña</FormLabel>
-                      <a
-                        href="#"
+                      <Link
+                        href="/auth/reset-password"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
                         Olvidaste tu contraseña?
-                      </a>
+                      </Link>
                     </div>
                     <FormControl>
                       <Input type="password" {...field} />
