@@ -6,7 +6,7 @@ set -euo pipefail
 # ========================
 DOMAIN_NAME="portalclientes.ciberbrain.net"
 EMAIL="contacto@ciberbrain.net"
-REPO_URL="https://github.com/MatiasErique/ciberbrain-portal-clientes.git"
+REPO_URL="https://github.com/MatiasEnrique/ciberbrain-portal-clientes.git"
 APP_DIR="$HOME/ciberbrain-portal-clientes"
 SWAP_SIZE="1G"   # opcional
 # ========================
