@@ -77,9 +77,9 @@ export async function getModelos(marca: string, modelo: string) {
 }
 
 export async function getHasComercios() {
-  const hasComercios: HasComercios = await executeWithUserValidation(
+  const hasComercios = (await executeWithUserValidation(
     Prisma.sql`dbo.WP_Datos_Comercios`
-  );
+  )) as HasComercios;
 
   const parsedHasComercios = hasComerciosSchema.parse(hasComercios);
 
