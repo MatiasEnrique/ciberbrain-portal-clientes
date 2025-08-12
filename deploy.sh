@@ -92,26 +92,30 @@ fi
 
 step "[8/9] Configurando Nginx reverse proxy..."
 
-# Asegurar que nginx.conf incluya todos los sites-enabled (por si quedó myapp fijo)
+# Backup y asegurar include wildcard (eliminar restos de 'myapp')
 sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak.$(date +%F-%H%M%S)
-sudo sed -i 's|include /etc/nginx/sites-enabled/myapp;|include /etc/nginx/sites-enabled/*;|' /etc/nginx/nginx.conf || true
-sudo sed -i 's|include\s\+/etc/nginx/sites-enabled/myapp;|include /etc/nginx/sites-enabled/*;|g' /etc/nginx/nginx.conf || true
+sudo sed -i '/include \\/etc\\/nginx\\/sites-enabled\\/myapp;/d' /etc/nginx/nginx.conf || true
+# Reemplaza cualquier include específico por el wildcard
+sudo sed -ri 's@^\s*include\s+/etc/nginx/sites-enabled/[^;]+;@    include /etc/nginx/sites-enabled/*;@' /etc/nginx/nginx.conf
+# Asegura que exista el include wildcard (si no estaba)
+sudo grep -q 'include /etc/nginx/sites-enabled/\*;' /etc/nginx/nginx.conf || \
+  sudo sed -i '/include \/etc\/nginx\/conf\.d\/\*\.conf;/a\    include /etc/nginx/sites-enabled/*;' /etc/nginx/nginx.conf
 
 # En contexto http: map websockets y zona de rate limit (idempotentes)
-sudo bash -c 'cat > /etc/nginx/conf.d/map_connection_upgrade.conf <<'"'"'MAP'"'"'
+sudo tee /etc/nginx/conf.d/map_connection_upgrade.conf >/dev/null <<'MAP'
 map $http_upgrade $connection_upgrade {
   default close;
   websocket upgrade;
 }
-MAP'
+MAP
 
-sudo bash -c 'cat > /etc/nginx/conf.d/ratelimit.conf <<'"'"'RATE'"'"'
+sudo tee /etc/nginx/conf.d/ratelimit.conf >/dev/null <<'RATE'
 limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
-RATE'
+RATE
 
-# VHost (sin limit_req_zone dentro del server {})
+# VHost (sin limit_req_zone dentro del server {}), cuidando que los $ no se expandan
 VHOST_PATH="/etc/nginx/sites-available/portal"
-sudo bash -c "cat > '$VHOST_PATH' <<NGINX
+sudo tee "$VHOST_PATH" >/dev/null <<NGINX
 server {
     listen 80;
     server_name ${DOMAIN_NAME};
@@ -139,22 +143,31 @@ server {
         limit_req zone=mylimit burst=20 nodelay;
 
         # Hardening básico
-        add_header X-Frame-Options DENY;
-        add_header X-Content-Type-Options nosniff;
-        add_header Referrer-Policy strict-origin-when-cross-origin;
-        add_header Permissions-Policy 'geolocation=(), microphone=(), camera=()';
-        add_header Content-Security-Policy \"default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data: blob:\";
+        add_header X-Frame-Options "DENY";
+        add_header X-Content-Type-Options "nosniff";
+        add_header Referrer-Policy "strict-origin-when-cross-origin";
+        add_header Permissions-Policy "geolocation=(), microphone=(), camera=()";
+        add_header Content-Security-Policy "default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; frame-ancestors 'none'";
     }
 }
-NGINX"
+NGINX
 
 # Habilitar vhost y deshabilitar default
 sudo ln -sf "$VHOST_PATH" /etc/nginx/sites-enabled/portal
 sudo rm -f /etc/nginx/sites-enabled/default
+sudo rm -f /etc/nginx/sites-enabled/myapp /etc/nginx/sites-available/myapp || true
 
-# Probar Nginx y recargar
-sudo nginx -t
-sudo systemctl reload nginx
+# Probar Nginx y recargar/arrancar
+if sudo nginx -t; then
+  if systemctl is-active --quiet nginx; then
+    sudo systemctl reload nginx
+  else
+    sudo systemctl start nginx
+  fi
+else
+  echo "❌ nginx -t falló. Revisá la configuración."
+  exit 1
+fi
 
 step "[9/9] Build & deploy con Docker Compose..."
 cd "$APP_DIR"
@@ -165,7 +178,7 @@ sudo docker compose up --build -d
 echo
 echo "Emitiendo certificado TLS con Certbot..."
 sudo certbot --nginx -d "$DOMAIN_NAME" --non-interactive --agree-tos -m "$EMAIL" || true
-sudo nginx -t && sudo systemctl reload nginx
+sudo nginx -t && sudo systemctl reload nginx || sudo systemctl start nginx
 
 # Renovación automática (root)
 ( sudo crontab -l 2>/dev/null; echo '0 */12 * * * certbot renew --quiet && systemctl reload nginx' ) | sudo crontab -
