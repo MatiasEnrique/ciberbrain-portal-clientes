@@ -1,4 +1,4 @@
-import { getMarcas } from "@/app/(protected)/productos/data";
+import { getMarcas } from "@/app/productos/data";
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 

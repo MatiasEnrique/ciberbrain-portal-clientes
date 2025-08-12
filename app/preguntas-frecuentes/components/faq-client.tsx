@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FAQAccordion } from "@/app/(public)/preguntas-frecuentes/components/faq-accordion";
-import { FAQCategorySelector } from "@/app/(public)/preguntas-frecuentes/components/faq-category-selector";
-import { FAQEditorModal } from "@/app/(public)/preguntas-frecuentes/components/faq-editor-modal";
+import { FAQAccordion } from "@/app/preguntas-frecuentes/components/faq-accordion";
+import { FAQCategorySelector } from "@/app/preguntas-frecuentes/components/faq-category-selector";
+import { FAQEditorModal } from "@/app/preguntas-frecuentes/components/faq-editor-modal";
 import { FAQDeleteDialog } from "@/components/faq/faq-delete-dialog";
 import { FAQSkeleton } from "@/components/faq/faq-skeleton";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { isAdmin } from "@/lib/editable-text";
+import { isAdmin } from "@/lib/permissions";
 import { toast } from "sonner";
 
 interface FAQItem {
@@ -33,9 +33,7 @@ export function FAQClient() {
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const userIsAdmin = session?.user?.id
-    ? isAdmin(parseInt(session.user.id))
-    : false;
+  const userIsAdmin = isAdmin(session?.user);
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["faq-categories"],
@@ -46,11 +44,11 @@ export function FAQClient() {
     },
   });
 
-  const { 
-    data: faqs = [], 
-    refetch: refetchFAQs, 
+  const {
+    data: faqs = [],
+    refetch: refetchFAQs,
     isLoading: isLoadingFAQs,
-    error: faqsError 
+    error: faqsError,
   } = useQuery<FAQItem[]>({
     queryKey: ["faqs", selectedCategory],
     queryFn: async () => {
@@ -256,7 +254,9 @@ export function FAQClient() {
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
         questionText={
-          selectedFAQIndex !== null ? faqs[selectedFAQIndex]?.Pregunta || "" : ""
+          selectedFAQIndex !== null
+            ? faqs[selectedFAQIndex]?.Pregunta || ""
+            : ""
         }
         isLoading={deleteFAQMutation.isPending}
       />

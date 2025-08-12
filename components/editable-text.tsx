@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Edit2, Save, X, Eye, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
-import { isAdmin } from "@/lib/editable-text";
+import { isAdmin } from "@/lib/permissions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -35,9 +35,7 @@ export function EditableText({
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const userIsAdmin = session?.user?.id
-    ? isAdmin(parseInt(session.user.id))
-    : false;
+  const userIsAdmin = isAdmin(session?.user);
 
   const updateTextMutation = useMutation({
     mutationFn: async (newContent: string) => {

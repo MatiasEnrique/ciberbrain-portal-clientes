@@ -104,10 +104,6 @@ export async function updateEditableText(
   }
 }
 
-export function isAdmin(userId: number): boolean {
-  return userId === 1;
-}
-
 export const defaultTexts = {
   RedAgentes: {
     lbl_titulo_agentes: "Red de Agentes Autorizados",
@@ -120,12 +116,14 @@ export const defaultTexts = {
     Titulo_Contacto: "Información de Contacto",
     Subtitulo_Contacto: "Contactese con nosotros de distintas maneras",
     Texto_Contacto: "Telefono, Redes, etc",
-    
+
     // Additional editable texts for enhanced functionality
     Titulo_Formulario: "Envíanos un mensaje",
-    Descripcion_Formulario: "Completa el formulario y te responderemos a la brevedad",
+    Descripcion_Formulario:
+      "Completa el formulario y te responderemos a la brevedad",
     Titulo_Info_Contacto: "Información de contacto",
-    Descripcion_Info_Contacto: "También puedes comunicarte con nosotros por estos medios",
+    Descripcion_Info_Contacto:
+      "También puedes comunicarte con nosotros por estos medios",
     Telefono_Contacto: "+54 11 1234-5678",
     Horario_Contacto: "Lunes a Viernes de 9:00 a 18:00 hs",
     Email_Contacto: "contacto@ciberbrain.com",
@@ -137,6 +135,7 @@ export const defaultTexts = {
   },
   PreguntasFrecuentes: {
     lbl_titulo_preguntas: "Preguntas frecuentes",
-    lbl_subtitulo_preguntas: "Encuentre las respuestas que con frecuencia, pueden ayudarlo a poner en marcha o utilizar su producto logrando las mejores prestaciones",
+    lbl_subtitulo_preguntas:
+      "Encuentre las respuestas que con frecuencia, pueden ayudarlo a poner en marcha o utilizar su producto logrando las mejores prestaciones",
   },
 };

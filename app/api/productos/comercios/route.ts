@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { comercioSchema } from "@/app/(protected)/productos/schemas";
+import { comercioSchema } from "@/app/productos/schemas";
 
 export async function GET(request: Request) {
   const session = await auth();

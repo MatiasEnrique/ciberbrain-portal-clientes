@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProducto } from "@/app/(protected)/producto/[id]/data";
+import { getProducto } from "@/app/producto/[id]/data";
 import { auth } from "@/auth";
 
 export async function GET(

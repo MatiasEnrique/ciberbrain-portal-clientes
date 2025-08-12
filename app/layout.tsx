@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "@/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
+
 const inter = Inter({ subsets: ["latin"] });
 
 const metadata: Metadata = {

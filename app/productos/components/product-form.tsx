@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState, useRef, useMemo, useTransition } from "react";
+import { useState, useRef, useTransition } from "react";
 import { useDebounce } from "use-debounce";
 import { format } from "date-fns";
 import { CalendarIcon, UploadCloud, X } from "lucide-react";
@@ -38,7 +38,7 @@ import {
 import {
   registerProductSchema,
   RegisterProductPayload,
-} from "@/app/(protected)/productos/schemas";
+} from "@/app/productos/schemas";
 
 import { registerProduct } from "../actions";
 

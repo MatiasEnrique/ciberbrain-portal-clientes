@@ -1,4 +1,4 @@
-import { registerSchema } from "@/app/(public)/auth/registrarse/schemas";
+import { registerSchema } from "@/app/auth/registrarse/schemas";
 import * as z from "zod";
 
 export const signInSchema = z.object({

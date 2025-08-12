@@ -1,5 +1,5 @@
 import { EditableText } from "@/components/editable-text";
-import { FAQClient } from "@/app/(public)/preguntas-frecuentes/components/faq-client";
+import { FAQClient } from "@/app/preguntas-frecuentes/components/faq-client";
 import { getEditableTexts, defaultTexts } from "@/lib/editable-text";
 
 export default async function PreguntasFrecuentesPage() {
