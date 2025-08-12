@@ -35,12 +35,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.8.2
- * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+ * Prisma Client JS version: 6.14.0
+ * Query Engine version: 717184b7b35ea05dfa71a3236b7af656013e1e49
  */
 Prisma.prismaVersion = {
-  client: "6.8.2",
-  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
+  client: "6.14.0",
+  engine: "717184b7b35ea05dfa71a3236b7af656013e1e49"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -183,7 +183,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/mnt/c/Users/matis/Documents/Trabajo/Ciberbrain/portal-clientes-todo/ciberbrain-portal-clientes/prisma/@/generated/prisma",
+      "value": "C:\\Users\\matis\\Documents\\Trabajo\\ciberbrain-portal-clientes\\prisma\\@\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -192,23 +192,30 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
+        "value": "linux-musl-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [
       "views"
     ],
-    "sourceFilePath": "/mnt/c/Users/matis/Documents/Trabajo/Ciberbrain/portal-clientes-todo/ciberbrain-portal-clientes/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\matis\\Documents\\Trabajo\\ciberbrain-portal-clientes\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../..",
-  "clientVersion": "6.8.2",
-  "engineVersion": "2060c79ba17c6bb9f5823312b6f6b7f4a845738e",
+  "clientVersion": "6.14.0",
+  "engineVersion": "717184b7b35ea05dfa71a3236b7af656013e1e49",
   "datasourceNames": [
     "db"
   ],
@@ -222,8 +229,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  output          = \"@/generated/prisma\"\n  previewFeatures = [\"views\"]\n}\n\ndatasource db {\n  provider = \"sqlserver\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  ID                 Int       @id @map(\"ID\")\n  CodCli             Int?      @unique @map(\"CodCli\")\n  EMail              String?   @map(\"EMail\") @db.VarChar(50)\n  Password           String?   @map(\"Password\") @db.VarChar(20)\n  Perfil             Int?      @map(\"Perfil\")\n  Nacimiento         DateTime? @map(\"Nacimiento\")\n  FechaAlta          DateTime  @map(\"FechaAlta\")\n  Nombre             String?   @map(\"Nombre\") @db.VarChar(30)\n  Nombre2            String?   @map(\"Nombre2\") @db.VarChar(20)\n  Apellido           String?   @map(\"Apellido\") @db.VarChar(20)\n  Calle              String?   @map(\"Calle\") @db.VarChar(60)\n  Altura             String?   @map(\"Altura\") @db.VarChar(10)\n  Otros              String?   @map(\"Otros\") @db.VarChar(50)\n  Localidad          String?   @map(\"Localidad\") @db.VarChar(50)\n  IDLocalidad        Int?      @map(\"IDLocalidad\")\n  CodigoPostal       String?   @map(\"CodigoPostal\") @db.VarChar(50)\n  Partido            String?   @map(\"Partido\") @db.VarChar(50)\n  IDPartido          Int?      @map(\"IDPartido\")\n  Provincia          Int?      @map(\"Provincia\")\n  Pais               Int?      @map(\"Pais\")\n  Entre              String?   @map(\"Entre\") @db.VarChar(60)\n  Entre2             String?   @map(\"Entre2\") @db.VarChar(60)\n  Telefonos          String?   @map(\"Telefonos\") @db.VarChar(100)\n  Fax                String?   @map(\"Fax\") @db.VarChar(50)\n  Horario            String?   @map(\"Horario\") @db.VarChar(70)\n  Comentarios        String?   @map(\"Comentarios\") @db.Text\n  Sms                String?   @map(\"Sms\") @db.VarChar(50)\n  UltimoIngreso      DateTime? @map(\"UltimoIngreso\")\n  SessionOrigen      String?   @map(\"SessionOrigen\") @db.VarChar(50)\n  EstadoRegistracion Int?      @map(\"EstadoRegistracion\")\n  Documento          String?   @map(\"Documento\") @db.VarChar(50)\n  Web                String?   @map(\"Web\") @db.VarChar(60)\n  EMailAnterior      String?   @map(\"EMailAnterior\") @db.VarChar(50)\n  Latitud            Float?    @map(\"Latitud\")\n  Longitud           Float?    @map(\"Longitud\")\n\n  @@map(\"WP_UsuariosRegistrados\")\n}\n\nmodel Imagen {\n  Tipo   Int    @map(\"Tipo\")\n  ID     Int    @id @default(autoincrement()) @map(\"ID\")\n  Imagen Bytes? @map(\"Imagen\")\n  Orden  Int?   @map(\"Orden\")\n  AutoID Int    @map(\"AutoID\")\n\n  @@map(\"CC_Imagenes\")\n}\n\nmodel Marca {\n  codigo      Int    @id @map(\"Codigo\")\n  descripcion String @map(\"Descripcion\")\n\n  @@map(\"CC_Marcas\")\n}\n\n// Editable text content system - using existing legacy table\nmodel EditableText {\n  ID           Int      @id @default(autoincrement()) @map(\"ID\")\n  PageName     String   @map(\"PageName\") @db.VarChar(100)\n  ElementId    String   @map(\"ElementId\") @db.VarChar(100)\n  Content      String?  @map(\"Content\") @db.Text\n  Perfil       Int?     @default(0) @map(\"Perfil\")\n  Entorno      String?  @default(\"default\") @map(\"Entorno\") @db.VarChar(50)\n  LastModified DateTime @default(now()) @map(\"LastModified\")\n  ModifiedBy   Int?     @map(\"ModifiedBy\")\n\n  @@unique([PageName, ElementId, Perfil, Entorno])\n  @@map(\"WP_Texto_Pagina\")\n}\n\n// Note: Work order related tables are accessed via stored procedures\n// The following models are commented out as they don't exist as tables\n// but are accessed through stored procedures:\n// - WP_TraerTrabajo (SP)\n// - WP_SucesosTrabajo (SP)\n// - WP_CUSTOM_Encuesta_Datos_a_Validar (SP)\n// - WP_Get_Consumer_Functions (SP)\n// - CS_ObtenerFormatosImpresion (SP)\n// - WP_Sucesos_Generables_Usuario (Function)\n// - CS_GeneraSucesoTrabajo (SP)\n// - WP_Grabar_Encuesta (SP)\n",
-  "inlineSchemaHash": "a3bc1cf1ec69562574c4c833f0d89f8a328c10a91497aaa3afd69fbc63c0dc28",
+  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  output          = \"@/generated/prisma\"\n  previewFeatures = [\"views\"]\n  binaryTargets   = [\"linux-musl-openssl-3.0.x\", \"debian-openssl-3.0.x\", \"native\"]\n}\n\ndatasource db {\n  provider = \"sqlserver\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  ID                 Int       @id @map(\"ID\")\n  CodCli             Int?      @unique @map(\"CodCli\")\n  EMail              String?   @map(\"EMail\") @db.VarChar(50)\n  Password           String?   @map(\"Password\") @db.VarChar(20)\n  Perfil             Int?      @map(\"Perfil\")\n  Nacimiento         DateTime? @map(\"Nacimiento\")\n  FechaAlta          DateTime  @map(\"FechaAlta\")\n  Nombre             String?   @map(\"Nombre\") @db.VarChar(30)\n  Nombre2            String?   @map(\"Nombre2\") @db.VarChar(20)\n  Apellido           String?   @map(\"Apellido\") @db.VarChar(20)\n  Calle              String?   @map(\"Calle\") @db.VarChar(60)\n  Altura             String?   @map(\"Altura\") @db.VarChar(10)\n  Otros              String?   @map(\"Otros\") @db.VarChar(50)\n  Localidad          String?   @map(\"Localidad\") @db.VarChar(50)\n  IDLocalidad        Int?      @map(\"IDLocalidad\")\n  CodigoPostal       String?   @map(\"CodigoPostal\") @db.VarChar(50)\n  Partido            String?   @map(\"Partido\") @db.VarChar(50)\n  IDPartido          Int?      @map(\"IDPartido\")\n  Provincia          Int?      @map(\"Provincia\")\n  Pais               Int?      @map(\"Pais\")\n  Entre              String?   @map(\"Entre\") @db.VarChar(60)\n  Entre2             String?   @map(\"Entre2\") @db.VarChar(60)\n  Telefonos          String?   @map(\"Telefonos\") @db.VarChar(100)\n  Fax                String?   @map(\"Fax\") @db.VarChar(50)\n  Horario            String?   @map(\"Horario\") @db.VarChar(70)\n  Comentarios        String?   @map(\"Comentarios\") @db.Text\n  Sms                String?   @map(\"Sms\") @db.VarChar(50)\n  UltimoIngreso      DateTime? @map(\"UltimoIngreso\")\n  SessionOrigen      String?   @map(\"SessionOrigen\") @db.VarChar(50)\n  EstadoRegistracion Int?      @map(\"EstadoRegistracion\")\n  Documento          String?   @map(\"Documento\") @db.VarChar(50)\n  Web                String?   @map(\"Web\") @db.VarChar(60)\n  EMailAnterior      String?   @map(\"EMailAnterior\") @db.VarChar(50)\n  Latitud            Float?    @map(\"Latitud\")\n  Longitud           Float?    @map(\"Longitud\")\n\n  @@map(\"WP_UsuariosRegistrados\")\n}\n\nmodel Imagen {\n  Tipo   Int    @map(\"Tipo\")\n  ID     Int    @id @default(autoincrement()) @map(\"ID\")\n  Imagen Bytes? @map(\"Imagen\")\n  Orden  Int?   @map(\"Orden\")\n  AutoID Int    @map(\"AutoID\")\n\n  @@map(\"CC_Imagenes\")\n}\n\nmodel Marca {\n  codigo      Int    @id @map(\"Codigo\")\n  descripcion String @map(\"Descripcion\")\n\n  @@map(\"CC_Marcas\")\n}\n\n// Editable text content system - using existing legacy table\nmodel EditableText {\n  ID           Int      @id @default(autoincrement()) @map(\"ID\")\n  PageName     String   @map(\"PageName\") @db.VarChar(100)\n  ElementId    String   @map(\"ElementId\") @db.VarChar(100)\n  Content      String?  @map(\"Content\") @db.Text\n  Perfil       Int?     @default(0) @map(\"Perfil\")\n  Entorno      String?  @default(\"default\") @map(\"Entorno\") @db.VarChar(50)\n  LastModified DateTime @default(now()) @map(\"LastModified\")\n  ModifiedBy   Int?     @map(\"ModifiedBy\")\n\n  @@unique([PageName, ElementId, Perfil, Entorno])\n  @@map(\"WP_Texto_Pagina\")\n}\n",
+  "inlineSchemaHash": "7e5185a5309bf604a1fb77a212a611451caf1d0652d5ad0c36a3d193a094ecbe",
   "copyEngine": true
 }
 config.dirname = '/'
