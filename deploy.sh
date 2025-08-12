@@ -1,165 +1,131 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Env Vars
-AUTH_SECRET="ioO1Qwek+X5GtHUGY8RaNQ2L6VF5PD8mWjAO9GORGZA="
-DATABASE_URL="sqlserver://186.189.250.139:1433;database=CiberBase;user=sa;password=Genio9242;trustServerCertificate=true; encrypt=false"
-EMAIL_HOST="mail.ciberbrain.net"
-EMAIL_SENDER="contacto@ciberbrain.net"
-EMAIL_SENDER_ALIAS="Servicio de Registracion"
-EMAIL_PORT=465
-EMAIL_USER="contacto@ciberbrain.net"
-EMAIL_PASSWORD="Pfi8932kjdas099m!Q"
-EMAIL_SSL=true
-NODE_ENV=development
-UPLOAD_PATH=''
-RED_AGENTES=true
+# ========================
+# Variables a EDITAR
+# ========================
 DOMAIN_NAME="portalclientes.ciberbrain.net"
 EMAIL="contacto@ciberbrain.net"
-
-# Script Vars
 REPO_URL="https://github.com/MatiasErique/ciberbrain-portal-clientes.git"
-APP_DIR=~/ciberbrain-portal-clientes
-SWAP_SIZE="1G"  # Swap size of 1GB
+APP_DIR="$HOME/ciberbrain-portal-clientes"
+SWAP_SIZE="1G"   # opcional
+# ========================
 
-# Update package list and upgrade existing packages
+echo "[1/7] Actualizando sistema..."
 sudo apt update && sudo apt upgrade -y
 
-# Add Swap Space
-echo "Adding swap space..."
-sudo fallocate -l $SWAP_SIZE /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
+echo "[2/7] Creando swap si no existe..."
+if ! swapon --show | grep -q '^/swapfile'; then
+  sudo fallocate -l "$SWAP_SIZE" /swapfile
+  sudo chmod 600 /swapfile
+  sudo mkswap /swapfile
+  echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab >/dev/null
+  sudo swapon /swapfile
+fi
 
-# Make swap permanent
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-
-# Install Docker
-sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y
+echo "[3/7] Instalando Docker Engine + Compose v2..."
+sudo apt install -y ca-certificates curl gnupg lsb-release
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
 sudo apt update
-sudo apt install docker-ce -y
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo systemctl enable --now docker
 
-# Install Docker Compose
-sudo rm -f /usr/local/bin/docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+echo "[4/7] Instalando Nginx + Certbot (plugin nginx)..."
+sudo apt install -y nginx certbot python3-certbot-nginx
+sudo systemctl enable --now nginx
 
-# Wait for the file to be fully downloaded before proceeding
-if [ ! -f /usr/local/bin/docker-compose ]; then
-  echo "Docker Compose download failed. Exiting."
-  exit 1
+echo "[5/7] Configurando firewall..."
+if command -v ufw >/dev/null 2>&1; then
+  sudo ufw allow OpenSSH
+  sudo ufw allow 80/tcp
+  sudo ufw allow 443/tcp
+  sudo ufw --force enable
 fi
 
-sudo chmod +x /usr/local/bin/docker-compose
-
-# Ensure Docker Compose is executable and in path
-sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-# Verify Docker Compose installation
-docker-compose --version
-if [ $? -ne 0 ]; then
-  echo "Docker Compose installation failed. Exiting."
-  exit 1
-fi
-
-# Ensure Docker starts on boot and start Docker service
-sudo systemctl enable docker
-sudo systemctl start docker
-
-# Clone the Git repository
-if [ -d "$APP_DIR" ]; then
-  echo "Directory $APP_DIR already exists. Pulling latest changes..."
-  cd $APP_DIR && git pull
+echo "[6/7] Clonando/actualizando repositorio..."
+if [ -d "$APP_DIR/.git" ]; then
+  git -C "$APP_DIR" pull
 else
-  echo "Cloning repository from $REPO_URL..."
-  git clone $REPO_URL $APP_DIR
-  cd $APP_DIR
+  git clone "$REPO_URL" "$APP_DIR"
 fi
 
-
-# Install Nginx
-sudo apt install nginx -y
-
-# Remove old Nginx config (if it exists)
-sudo rm -f /etc/nginx/sites-available/myapp
-sudo rm -f /etc/nginx/sites-enabled/myapp
-
-# Stop Nginx temporarily to allow Certbot to run in standalone mode
-sudo systemctl stop nginx
-
-# Obtain SSL certificate using Certbot standalone mode
-sudo apt install certbot -y
-sudo certbot certonly --standalone -d $DOMAIN_NAME --non-interactive --agree-tos -m $EMAIL
-
-# Ensure SSL files exist or generate them
-if [ ! -f /etc/letsencrypt/options-ssl-nginx.conf ]; then
-  sudo wget https://raw.githubusercontent.com/certbot/certbot/refs/heads/main/certbot-nginx/src/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf -P /etc/letsencrypt/
+echo "[7/7] Creando .env si no existe (plantilla)..."
+if [ ! -f "$APP_DIR/.env" ]; then
+  cat > "$APP_DIR/.env" <<EOF
+NODE_ENV=production
+# AUTH_SECRET=
+# DATABASE_URL=
+# EMAIL_HOST=
+# EMAIL_SENDER=
+# EMAIL_SENDER_ALIAS=
+# EMAIL_PORT=
+# EMAIL_USER=
+# EMAIL_PASSWORD=
+# EMAIL_SSL=true
+# RED_AGENTES=true
+# UPLOAD_PATH=
+# DOMAIN_NAME=$DOMAIN_NAME
+EOF
+  echo "  -> Se generó $APP_DIR/.env (editalo con tus secretos)."
 fi
 
-if [ ! -f /etc/letsencrypt/ssl-dhparams.pem ]; then
-  sudo openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
-fi
+echo "Configurando Nginx reverse proxy..."
+NGINX_MAP_CONF="/etc/nginx/conf.d/map_connection_upgrade.conf"
+sudo bash -c "cat > '$NGINX_MAP_CONF' <<'MAP'
+map \$http_upgrade \$connection_upgrade {
+  default close;
+  websocket upgrade;
+}
+MAP"
 
-# Create Nginx config with reverse proxy, SSL support, rate limiting, and streaming support
-sudo cat > /etc/nginx/sites-available/myapp <<EOL
+VHOST_PATH="/etc/nginx/sites-available/portal"
+sudo bash -c "cat > '$VHOST_PATH' <<NGINX
 limit_req_zone \$binary_remote_addr zone=mylimit:10m rate=10r/s;
 
 server {
     listen 80;
-    server_name $DOMAIN_NAME;
+    server_name ${DOMAIN_NAME};
 
-    # Redirect all HTTP requests to HTTPS
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name $DOMAIN_NAME;
-
-    ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    # Enable rate limiting
-    limit_req zone=mylimit burst=20 nodelay;
+    location ^~ /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
+        proxy_set_header Connection \$connection_upgrade;
         proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-
-        # Disable buffering for streaming support
+        proxy_read_timeout 600s;
+        proxy_send_timeout 600s;
         proxy_buffering off;
         proxy_set_header X-Accel-Buffering no;
+        limit_req zone=mylimit burst=20 nodelay;
     }
+
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header Referrer-Policy strict-origin-when-cross-origin;
+    add_header Permissions-Policy 'geolocation=(), microphone=(), camera=()';
+    add_header Content-Security-Policy "default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data: blob:";
 }
-EOL
+NGINX"
 
-# Create symbolic link if it doesn't already exist
-sudo ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/myapp
+sudo ln -sf "$VHOST_PATH" /etc/nginx/sites-enabled/portal
+sudo nginx -t && sudo systemctl reload nginx
 
-# Restart Nginx to apply the new configuration
-sudo systemctl restart nginx
+cd "$APP_DIR"
+sudo docker compose up --build -d
 
-# Build and run the Docker containers from the app directory (~/myapp)
-cd $APP_DIR
-sudo docker-compose up --build -d
+echo "Solicitando certificado TLS con Certbot..."
+sudo certbot --nginx -d "$DOMAIN_NAME" --non-interactive --agree-tos -m "$EMAIL" || true
+sudo nginx -t && sudo systemctl reload nginx
 
-# Check if Docker Compose started correctly
-if ! sudo docker-compose ps | grep "Up"; then
-  echo "Docker containers failed to start. Check logs with 'docker-compose logs'."
-  exit 1
-fi
+echo "Renovación automática SSL..."
+( sudo crontab -l 2>/dev/null; echo '0 */12 * * * certbot renew --quiet && systemctl reload nginx' ) | sudo crontab -
 
-# Setup automatic SSL certificate renewal...
-( crontab -l 2>/dev/null; echo "0 */12 * * * certbot renew --quiet && systemctl reload nginx" ) | crontab -
-
-# Output final message
-echo "Deployment complete. Your Next.js app and PostgreSQL database are now running.
-Next.js is available at https://$DOMAIN_NAME"
-
+echo "Listo ✅ App en: https://${DOMAIN_NAME}"
