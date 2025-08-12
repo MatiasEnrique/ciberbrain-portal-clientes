@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   output: "standalone",
   reactStrictMode: true,
-  swcMinify: true,
   poweredByHeader: false,
   images: {
     domains: ["ciberbrain.net"],
@@ -13,6 +12,6 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
-};
+} satisfies NextConfig;
 
 module.exports = nextConfig;
