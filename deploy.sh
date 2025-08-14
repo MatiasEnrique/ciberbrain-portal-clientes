@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# version 3 (Ubuntu + webroot + Nginx + docker compose plugin + hardening)
+# deploy-standalone.sh
+# Ubuntu + Docker + docker compose plugin + Nginx + Certbot (standalone) + redirects fix
 set -euo pipefail
 
 # ========================
@@ -10,20 +11,20 @@ EMAIL="contacto@ciberbrain.net"
 REPO_URL="https://github.com/MatiasEnrique/ciberbrain-portal-clientes.git"
 APP_DIR="$HOME/ciberbrain-portal-clientes"
 SWAP_SIZE="1G"
-APP_PORT="3000"          # Puerto interno de la app (host)
+APP_PORT="3000"          # Puerto interno donde escucha la app
 CLIENT_MAX_BODY="20m"    # Tamaño máx. de upload
 # ========================
 
 export DEBIAN_FRONTEND=noninteractive
 
-echo ">> Actualizando sistema y herramientas base..."
+echo ">> Actualizando sistema..."
 sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get install -y --no-install-recommends \
   git curl wget ca-certificates gnupg lsb-release software-properties-common \
   dnsutils jq nginx certbot cron
 
-echo ">> Asegurando cron activo para renovaciones..."
+echo ">> Asegurando cron activo..."
 sudo systemctl enable --now cron
 
 # Swap idempotente
@@ -47,7 +48,7 @@ if ! command -v docker >/dev/null 2>&1; then
   sudo systemctl enable --now docker
 fi
 
-# (Opcional) agregar usuario al grupo docker para sesiones futuras
+# (Opcional) agregar usuario al grupo docker
 if ! id -nG "$USER" | grep -qw docker; then
   sudo usermod -aG docker "$USER" || true
 fi
@@ -73,67 +74,37 @@ else
   git clone --depth 1 "$REPO_URL" "$APP_DIR"
 fi
 
-# Asegurar .env para que el arranque no falle
+# Asegurar .env mínimo (ajustá luego lo que necesites)
 if [ ! -f "$APP_DIR/.env" ]; then
-  if [ -f "$APP_DIR/.env.example" ]; then
-    cp "$APP_DIR/.env.example" "$APP_DIR/.env"
-    echo ">> .env creado desde .env.example (ajústalo si hace falta)."
-  else
-    echo -e "NEXT_PUBLIC_APP_NAME=PortalClientes\nNODE_ENV=production" > "$APP_DIR/.env"
-    echo ">> .env mínimo generado (ajústalo)."
-  fi
+  {
+    echo "NODE_ENV=production"
+    echo "PORT=${APP_PORT}"
+    echo "NEXTAUTH_URL=https://${DOMAIN_NAME}"
+    # Agregá aquí el resto de tus variables (DATABASE_URL, etc.)
+  } > "$APP_DIR/.env"
+  echo ">> .env mínimo generado en $APP_DIR/.env"
 fi
 
-# Nginx: webroot para ACME
-sudo mkdir -p /var/www/certbot
-sudo chown -R www-data:www-data /var/www/certbot
-
-# HTTP temporal para ACME (sin expansión de variables bash)
-sudo tee /etc/nginx/sites-available/myapp_http.conf >/dev/null <<'EOL'
-server {
-    listen 80;
-    listen [::]:80;
-    server_name __DOMAIN_NAME__;
-
-    # ACME challenge
-    location ^~ /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-        default_type text/plain;
-        allow all;
-    }
-
-    # Redirigir resto a HTTPS
-    location / {
-        return 301 https://$host$request_uri;
-    }
-}
-EOL
-sudo sed -i "s#__DOMAIN_NAME__#${DOMAIN_NAME}#g" /etc/nginx/sites-available/myapp_http.conf
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo ln -sf /etc/nginx/sites-available/myapp_http.conf /etc/nginx/sites-enabled/myapp_http.conf
-sudo nginx -t
-sudo systemctl reload nginx
-
-# Sanity check DNS vs IP pública (no aborta, solo avisa)
+# Sanity DNS antes de emitir cert
 DNS_IP="$(dig +short A ${DOMAIN_NAME} | tail -n1 || true)"
 PUB_IP="$(curl -s https://api.ipify.org || curl -s ifconfig.me || true)"
 if [ -n "${DNS_IP}" ] && [ -n "${PUB_IP}" ] && [ "${DNS_IP}" != "${PUB_IP}" ]; then
-  echo ">> AVISO: El A de ${DOMAIN_NAME} (${DNS_IP}) no coincide con la IP pública (${PUB_IP}). Certbot podría fallar."
+  echo ">> AVISO: A(${DOMAIN_NAME})=${DNS_IP} no coincide con IP pública=${PUB_IP}. Certbot puede fallar."
 fi
 
-# Emitir certificado (webroot)
+# Parar Nginx para certbot --standalone
+echo ">> Parando Nginx para emitir certificado (standalone)..."
+sudo systemctl stop nginx || true
+
+# Emitir certificado (standalone)
 if [ ! -f "/etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem" ]; then
   echo ">> Obteniendo certificado para ${DOMAIN_NAME}..."
-  if ! sudo certbot certonly --webroot -w /var/www/certbot \
-      -d "${DOMAIN_NAME}" --non-interactive --agree-tos -m "${EMAIL}"; then
-    echo ">> ERROR: No se pudo emitir el certificado. Verificá DNS/puerto 80 y reintentá."
-    exit 1
-  fi
+  sudo certbot certonly --standalone -d "${DOMAIN_NAME}" --non-interactive --agree-tos -m "${EMAIL}"
 else
   echo ">> Certificado existente detectado. Saltando emisión inicial."
 fi
 
-# Asegurar archivos SSL comunes
+# Archivos SSL comunes
 if [ ! -f /etc/letsencrypt/options-ssl-nginx.conf ]; then
   sudo wget -q https://raw.githubusercontent.com/certbot/certbot/refs/heads/main/certbot-nginx/src/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf -P /etc/letsencrypt/
 fi
@@ -141,9 +112,9 @@ if [ ! -f /etc/letsencrypt/ssl-dhparams.pem ]; then
   sudo openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
 fi
 
-# Config final HTTPS + reverse proxy (sin expansión de variables bash)
+# Nginx config (con headers completos y proxy_redirect off)
 sudo tee /etc/nginx/sites-available/myapp.conf >/dev/null <<'EOL'
-# ====== http-level (este archivo se incluye dentro de http {}) ======
+# (Este archivo se incluye dentro de http {})
 map $http_upgrade $connection_upgrade {
     default upgrade;
     ''      close;
@@ -155,17 +126,8 @@ server {
     listen [::]:80;
     server_name __DOMAIN_NAME__;
 
-    # ACME challenge
-    location ^~ /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-        default_type text/plain;
-        allow all;
-    }
-
     # Redirección global a HTTPS
-    location / {
-        return 301 https://$host$request_uri;
-    }
+    return 301 https://$host$request_uri;
 }
 
 server {
@@ -181,19 +143,19 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    # Seguridad adicional
+    # Seguridad
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
-    # OCSP stapling (requiere resolver)
+    # OCSP stapling
     ssl_stapling on;
     ssl_stapling_verify on;
     resolver 1.1.1.1 8.8.8.8 valid=300s;
     resolver_timeout 5s;
 
-    # Rate limiting
+    # Rate limit
     limit_req zone=mylimit burst=20 nodelay;
 
     location / {
@@ -204,20 +166,22 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
 
-        # Forwarding
+        # Headers críticos para URLs y redirects
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
 
-        # Streaming sin buffer
+        # No tocar Location del upstream
+        proxy_redirect off;
+
+        # Streaming
         proxy_buffering off;
         proxy_set_header X-Accel-Buffering no;
-
-        # Evitar caché del proxy
         proxy_cache_bypass $http_upgrade;
 
-        # Timeouts generosos para SSR/stream
         proxy_read_timeout 600s;
         proxy_send_timeout 600s;
     }
@@ -227,35 +191,38 @@ sudo sed -i "s#__DOMAIN_NAME__#${DOMAIN_NAME}#g" /etc/nginx/sites-available/myap
 sudo sed -i "s#__APP_PORT__#${APP_PORT}#g" /etc/nginx/sites-available/myapp.conf
 sudo sed -i "s#__CLIENT_MAX_BODY__#${CLIENT_MAX_BODY}#g" /etc/nginx/sites-available/myapp.conf
 
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo ln -sf /etc/nginx/sites-available/myapp.conf /etc/nginx/sites-enabled/myapp.conf
-sudo rm -f /etc/nginx/sites-enabled/myapp_http.conf || true
+
+echo ">> Iniciando Nginx..."
 sudo nginx -t
-sudo systemctl reload nginx
+sudo systemctl restart nginx
 
 # Build & run containers
 cd "$APP_DIR"
-echo ">> Levantando contenedores con docker compose..."
-# Asegúrate que en tu compose el servicio web exponga 127.0.0.1:${APP_PORT}:${APP_PORT}
+echo ">> Levantando contenedores..."
+# Asegurate que tu compose publique 127.0.0.1:${APP_PORT}:${APP_PORT}
 sudo docker compose up -d --build
 
-echo ">> Verificando estado de contenedores..."
+echo ">> Verificando estado..."
 if ! sudo docker compose ps | grep -Eiq "Up|running"; then
-  echo ">> Los contenedores no iniciaron correctamente. Revisá logs con:"
+  echo ">> Los contenedores no iniciaron correctamente. Logs:"
   echo "   sudo docker compose logs --no-color --tail=200"
   exit 1
 fi
 
 # Renovación automática (root crontab)
-( sudo crontab -l 2>/dev/null; echo '0 3,15 * * * certbot renew --quiet --deploy-hook "systemctl reload nginx"' ) | sudo crontab -
+CRON_LINE='0 3,15 * * * certbot renew --quiet --deploy-hook "systemctl reload nginx"'
+if ! sudo crontab -l 2>/dev/null | grep -qF "$CRON_LINE"; then
+  ( sudo crontab -l 2>/dev/null; echo "$CRON_LINE" ) | sudo crontab -
+fi
 
 echo
 echo "====================== DONE ======================"
 echo "App:       https://${DOMAIN_NAME}"
 echo "Repo dir:  ${APP_DIR}"
 echo
-echo "Checks útiles:"
+echo "Checks:"
 echo "  sudo ss -ltnp | egrep ':(80|443|${APP_PORT})\\s' || true"
 echo "  curl -I http://127.0.0.1:${APP_PORT} || true"
-echo
-echo "Si ves 502 en Nginx, asegurá que el servicio publica 127.0.0.1:${APP_PORT}:${APP_PORT} en tu docker-compose."
 echo "=================================================="
