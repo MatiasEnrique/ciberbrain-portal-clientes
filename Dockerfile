@@ -43,7 +43,6 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# (Do NOT copy prisma paths manually unless you customized generator output)
 
 # Non-root
 RUN adduser -D -H -u 1001 appuser
