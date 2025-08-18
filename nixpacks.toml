@@ -1,0 +1,3 @@
+[phases.setup]
+# Keep your Node version the same as before
+nixPkgs = ["nodejs_22", "npm-11.5.2", "openssl", "curl", "wget"]
