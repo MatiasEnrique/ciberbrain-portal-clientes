@@ -2,8 +2,8 @@ FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates openssl git && rm -rf /var/lib/apt/lists/*
 RUN npm i -g npm@11
-COPY package*.json ./
 ENV NPM_CONFIG_LEGACY_PEER_DEPS=true
+COPY package*.json ./
 RUN npm ci
 COPY prisma ./prisma
 RUN npx prisma generate
