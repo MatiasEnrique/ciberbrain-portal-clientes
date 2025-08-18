@@ -2,13 +2,10 @@ import type React from "react";
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import Navbar from "@/components/navbar";
-import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "@/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
-
-const inter = Inter({ subsets: ["latin"] });
 
 const metadata: Metadata = {
   title: "CiberClientes",
@@ -22,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body>
         <QueryProvider>
           <SessionProvider>
             <ThemeProvider
