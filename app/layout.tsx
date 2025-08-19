@@ -6,6 +6,12 @@ import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "@/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
+import localFont from "next/font/local";
+
+const myFont = localFont({
+  src: "./NataSans.ttf",
+  display: "swap",
+});
 
 const metadata: Metadata = {
   title: "CiberClientes",
@@ -19,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={myFont.className}>
         <QueryProvider>
           <SessionProvider>
             <ThemeProvider
