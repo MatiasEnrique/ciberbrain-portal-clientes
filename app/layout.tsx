@@ -16,6 +16,9 @@ const myFont = localFont({
 const metadata: Metadata = {
   title: "CiberClientes",
   description: "CiberClientes",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
